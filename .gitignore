@@ -1,5 +1,5 @@
 /.vscode
-/libs
+/SDL
 
 # Prerequisites
 *.d
