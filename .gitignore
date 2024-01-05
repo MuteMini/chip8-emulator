@@ -1,5 +1,7 @@
+# Individual project installations
 /.vscode
 /build
+/vcpkg
 
 # Prerequisites
 *.d
