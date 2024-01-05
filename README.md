@@ -4,16 +4,16 @@ A simple GUI Chip-8 Emulator used to learn the basics of emulation.
 
 ## Local Development
 
-The makefile assumes that within the main directory there exists the following:
+For this solo development, I decided to step into utilizing vcpkg and cmake to help project builds. Currently the CMake file only supports the x64-mingw triplet environment. Further build environments may be added depending on the final scope of the project.
 
-```
-SDL2.dll
-\libs
-    \include
-        ...
-    \lib
-        ...
-```
+To set up CMake:
 
-The reasoning for this type of installation leans on prioritizing the modularity of development environments.
-The `SDL2.dll`, `\include` and `\lib` files/folders can be downloaded from the SDL website [here.](https://github.com/libsdl-org/SDL/releases/tag/release-2.28.5)
+- Download and install the latest stable releast of CMake [here](https://cmake.org/download/).
+
+To set up vcpkg:
+
+- Run `git clone https://github.com/Microsoft/vcpkg.git` on the parent folder.
+- Run `./vcpkg/bootstrap-vcpkg.bat` to compile vcpkg.
+- To run vcpkg commands, use `./vcpkg/vcpkg.exe` on the parent folder.
+
+After all is set up, the script `build_and_run.sh` can be run.
