@@ -9,8 +9,6 @@
 #include <SDL.h>
 #include "chip8.hpp"
 
-const int WIDTH{800}, HEIGHT{600};
-
 int main( int argc, char* argv[] ) {
 
     SDL_Init( SDL_INIT_EVERYTHING );

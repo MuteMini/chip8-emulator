@@ -7,6 +7,14 @@
 */
 
 #include <cstdint>
+#include <fstream>
+#include <string>
+
+#define MEM_ADDR_START 0x200
+#define MEM_ADDR_END 0xE8F
+
+#define WIDTH 64
+#define HEIGHT 32
 
 class Chip8 {
     private:
@@ -21,15 +29,15 @@ class Chip8 {
         uint8_t delay{};
         uint8_t sound{};
 
-        uint8_t *display{ new uint8_t[64*32]{} };
+        uint8_t *display{ new uint8_t[WIDTH*HEIGHT]{} };
 
     public:
         Chip8();
         ~Chip8();
 
-        bool loadProgram(uint8_t data);
+        void reset();
+
+        bool loadProgram(std::string file);
 
         bool tick();
-
-        
 };
