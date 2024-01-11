@@ -1,11 +1,17 @@
+/*
+    Author: Min Kang
+    Creation Date: January 7th, 2024
+
+    Entry point of the SDL executable. Sets up the event loop for the Chip8 interpreter.
+*/
+
 #include <iostream>
-#include <SDL.h>
+#include <SDL2/SDL.h>
 #include "chip8.hpp"
 
 int main( int argc, char* argv[] ) {
-    SDL_Init( SDL_INIT_EVERYTHING );
 
-    const int WIDTH{800}, HEIGHT{600};
+    SDL_Init( SDL_INIT_EVERYTHING );
 
     SDL_Window *window = SDL_CreateWindow("Chip-8 Emulator", 
                                         SDL_WINDOWPOS_UNDEFINED, 
@@ -13,6 +19,16 @@ int main( int argc, char* argv[] ) {
                                         WIDTH, 
                                         HEIGHT, 
                                         SDL_WINDOW_ALLOW_HIGHDPI);
+
+    SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, 0);
+
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    SDL_RenderClear(renderer);
+
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+    SDL_RenderDrawPoint(renderer, 200, 300);
+
+    SDL_RenderPresent(renderer);
 
     if( window == nullptr )
     {

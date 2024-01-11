@@ -8,7 +8,7 @@
     {
       "name": "default",
       "binaryDir": "${sourceDir}/build",
-      "generator": "MinGW Makefiles",
+      "generator": "Ninja",
       "cacheVariables": {
         "CMAKE_TOOLCHAIN_FILE": {
           "type": "FILEPATH",
