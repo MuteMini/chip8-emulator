@@ -11,5 +11,5 @@
 
 TEST_CASE("testing the factorial function") {
     CHECK(true);
-    CHECk(false);
+    CHECK(false);
 }
