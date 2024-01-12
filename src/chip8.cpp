@@ -3,7 +3,8 @@
     Creation Date: January 7th, 2024
 
     Defines the behaviours of the Chip8 system. Works as a high level abstraction.
-    Instr. behavior were written with the help of: https://github.com/mattmikolay/chip-8/wiki/CHIP%E2%80%908-Technical-Reference#graphics
+    Instr. behavior were written with the help of: https://github.com/mattmikolay/chip-8/wiki/CHIP%E2%80%908-Technical-Reference
+    and https://github.com/mattmikolay/chip-8/wiki/CHIP%E2%80%908-Instruction-Set
 */
 
 #include <algorithm>
@@ -30,8 +31,8 @@ void Chip8::reset() {
     std::fill(std::begin( reg ), std::end( reg ), 0);
     std::fill(std::begin( stack ), std::end( stack ), 0);
     
-    memory = new uint8_t[4096];
-    display = new uint8_t[WIDTH*HEIGHT];
+    memory = new uint8_t[4096]{};
+    display = new uint32_t[WIDTH*HEIGHT]{};
 }
 
 bool Chip8::loadProgram(std::string file) {
@@ -57,3 +58,13 @@ bool Chip8::loadProgram(std::string file) {
     return true;
 }
 
+bool Chip8::tick() {
+    // Fetching instruction
+    uint16_t instruction{ (memory[pc+1] << 8) + memory[pc] };
+    pc += 2;
+
+    if(instruction == 0x00E0) {
+
+    }
+
+};

@@ -15,6 +15,9 @@
 
 #define WIDTH 64
 #define HEIGHT 32
+#define SCALE 8
+
+class InstructionFailed;
 
 class Chip8 {
     private:
@@ -29,7 +32,7 @@ class Chip8 {
         uint8_t delay{};
         uint8_t sound{};
 
-        uint8_t *display{ new uint8_t[WIDTH*HEIGHT]{} };
+        uint32_t *display{ new uint32_t[WIDTH*HEIGHT]{} };
 
     public:
         Chip8();
