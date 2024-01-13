@@ -9,6 +9,9 @@
 
 #include <algorithm>
 #include <array>
+#include <filesystem>
+#include <iostream>
+
 #include "chip8.hpp"
 
 Chip8::Chip8() {};
@@ -35,13 +38,17 @@ void Chip8::reset() {
     display = new uint32_t[WIDTH*HEIGHT]{};
 }
 
+// Reading file functionality comes from https://coniferproductions.com/posts/2022/10/25/reading-binary-files-cpp/
 bool Chip8::loadProgram(std::string file) {
-    std::ifstream is{file, std::ios_base::in | std::ios_base::binary};
+    std::filesystem::path input{std::filesystem::current_path()};
+    input += std::filesystem::u8path(file);
+
+    std::ifstream is{input, std::ios_base::in | std::ios_base::binary};
 
     if(!is.good()) return false;
 
     is.seekg(0, is.end);
-    int size{ is.tellg() };
+    int size{ static_cast<int>(is.tellg()) };
 
     is.seekg(0, is.beg);
 
@@ -60,11 +67,9 @@ bool Chip8::loadProgram(std::string file) {
 
 bool Chip8::tick() {
     // Fetching instruction
-    uint16_t instruction{ (memory[pc+1] << 8) + memory[pc] };
     pc += 2;
 
     if(instruction == 0x00E0) {
-
+        
     }
-
 };
