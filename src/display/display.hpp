@@ -5,8 +5,9 @@
     Declares behaviors of the game display. Acts as a abstraction to the 
     SDL renderer functions.
 */
+#include <SDL2/SDL_render.h>
 
-#include<SDL2/SDL_render.h>
+#include "../header.hpp"
 
 class Display {
     private:

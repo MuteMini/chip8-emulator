@@ -10,6 +10,8 @@
 #include <fstream>
 #include <string>
 
+#include "../header.hpp"
+
 #define MEM_ADDR_START 0x200
 #define MEM_ADDR_END 0xE8F
 
