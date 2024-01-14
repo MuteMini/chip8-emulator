@@ -16,17 +16,19 @@ int main( int argc, char* argv[] ) {
     SDL_Window *window = SDL_CreateWindow("Chip-8 Emulator", 
                                         SDL_WINDOWPOS_UNDEFINED, 
                                         SDL_WINDOWPOS_UNDEFINED, 
-                                        WIDTH, 
-                                        HEIGHT, 
+                                        WIDTH*SCALE, 
+                                        HEIGHT*SCALE, 
                                         SDL_WINDOW_ALLOW_HIGHDPI);
 
     SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, 0);
+
+    SDL_RenderSetScale(renderer, SCALE, SCALE);
 
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
 
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-    SDL_RenderDrawPoint(renderer, 200, 300);
+    SDL_RenderDrawPoint(renderer, 0, 1);
 
     SDL_RenderPresent(renderer);
 
