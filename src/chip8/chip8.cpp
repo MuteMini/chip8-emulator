@@ -14,11 +14,23 @@
 
 #include "chip8.hpp"
 
-Chip8::Chip8() {};
+Chip8::Chip8() {
+    this->reset();
+};
 
 Chip8::~Chip8() {
     delete[] memory;
     delete[] display;
+};
+
+bool Chip8::loadData(uint16_t addr, uint8_t data[], int size) {
+    if(addr > MEM_ADDR_END - size) return false;
+
+    std::copy(data, data+size, memory+addr);
+    return true;
+};
+
+bool Chip8::drawBytes(uint16_t pos, uint8_t byte_size) {
 };
 
 void Chip8::reset() {
@@ -36,7 +48,25 @@ void Chip8::reset() {
     
     memory = new uint8_t[4096]{};
     display = new uint32_t[WIDTH*HEIGHT]{};
-}
+
+    uint8_t sprite_data[16*5]{0xF0, 0x90, 0x90, 0x90, 0xF0,
+                            0x20, 0x60, 0x20, 0x20, 0x70,
+                            0xF0, 0x10, 0xF0, 0x80, 0xF0,
+                            0xF0, 0x10, 0xF0, 0x10, 0xF0,
+                            0x90, 0x90, 0xF0, 0x10, 0x10,
+                            0xF0, 0x80, 0xF0, 0x10, 0xF0,
+                            0xF0, 0x80, 0xF0, 0x90, 0xF0,
+                            0xF0, 0x10, 0x20, 0x40, 0x40,
+                            0xF0, 0x90, 0xF0, 0x90, 0xF0,
+                            0xF0, 0x90, 0xF0, 0x10, 0xF0,
+                            0xF0, 0x90, 0xF0, 0x90, 0x90,
+                            0xE0, 0x90, 0xE0, 0x90, 0xE0,
+                            0xF0, 0x80, 0x80, 0x80, 0xF0,
+                            0xE0, 0x90, 0x90, 0x90, 0xE0,
+                            0xF0, 0x80, 0xF0, 0x80, 0xF0,
+                            0xF0, 0x80, 0xF0, 0x80, 0x80};
+    this->loadData(ADDR_SPRITE, &(sprite_data[0]), 16*5);
+};
 
 // Reading file functionality comes from https://coniferproductions.com/posts/2022/10/25/reading-binary-files-cpp/
 bool Chip8::loadProgram(std::string file) {

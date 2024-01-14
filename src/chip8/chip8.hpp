@@ -39,6 +39,10 @@ class Chip8 {
 
         uint32_t *display{ new uint32_t[WIDTH*HEIGHT]{} };
 
+        bool loadData(uint16_t addr, uint8_t data[], int size);
+
+        bool drawBytes(uint16_t addr, uint8_t bits);
+
     public:
         Chip8();
         ~Chip8();
@@ -47,7 +51,7 @@ class Chip8 {
 
         bool loadProgram(std::string file);
 
-        bool tick();
+        void tick();
 };
 
 #endif
