@@ -5,6 +5,8 @@
     Declares the behaviours of the Chip8 system.
     Structure/variable types were made with the help of this blog: https://austinmorlan.com/posts/chip8_emulator/ 
 */
+#ifndef CHIP8_H
+#define CHIP8_H
 
 #include <cstdint>
 #include <fstream>
@@ -46,3 +48,5 @@ class Chip8 {
 
         bool tick();
 };
+
+#endif
