@@ -12,14 +12,16 @@
 
 #include "../header.hpp"
 
-class Display {
+class Display 
+{
     private:
-        SDL_Renderer* renderer{};
+        SDL_Renderer* renderer{nullptr};
+        SDL_Texture* texture{nullptr};
 
     public:
-        Display();
+        Display(SDL_Renderer* renderer);
 
-        
+        void drawPixelData(uint32_t pixels[WIDTH*HEIGHT]);
 };
 
 #endif
