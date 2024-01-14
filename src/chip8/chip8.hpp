@@ -8,18 +8,17 @@
 #ifndef CHIP8_H
 #define CHIP8_H
 
+#define MEM_ADDR_START 0x200
+#define MEM_ADDR_END 0xE8F
+
+#define ADDR_SPRITE 0x000
+
 #include <cstdint>
 #include <fstream>
 #include <string>
 
 #include "../header.hpp"
 
-#define MEM_ADDR_START 0x200
-#define MEM_ADDR_END 0xE8F
-
-#define WIDTH 64
-#define HEIGHT 32
-#define SCALE 8
 
 class InstructionFailed;
 
@@ -36,8 +35,6 @@ class Chip8 {
 
         uint8_t delay{};
         uint8_t sound{};
-
-        uint32_t *display{ new uint32_t[WIDTH*HEIGHT]{} };
 
         bool loadData(uint16_t addr, uint8_t data[], int size);
 

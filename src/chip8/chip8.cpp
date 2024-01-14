@@ -20,7 +20,6 @@ Chip8::Chip8() {
 
 Chip8::~Chip8() {
     delete[] memory;
-    delete[] display;
 };
 
 bool Chip8::loadData(uint16_t addr, uint8_t data[], int size) {
@@ -28,9 +27,6 @@ bool Chip8::loadData(uint16_t addr, uint8_t data[], int size) {
 
     std::copy(data, data+size, memory+addr);
     return true;
-};
-
-bool Chip8::drawBytes(uint16_t pos, uint8_t byte_size) {
 };
 
 void Chip8::reset() {
@@ -41,13 +37,11 @@ void Chip8::reset() {
     sound = 0;
 
     delete[] memory;
-    delete[] display;
 
     std::fill(std::begin( reg ), std::end( reg ), 0);
     std::fill(std::begin( stack ), std::end( stack ), 0);
     
     memory = new uint8_t[4096]{};
-    display = new uint32_t[WIDTH*HEIGHT]{};
 
     uint8_t sprite_data[16*5]{0xF0, 0x90, 0x90, 0x90, 0xF0,
                             0x20, 0x60, 0x20, 0x20, 0x70,

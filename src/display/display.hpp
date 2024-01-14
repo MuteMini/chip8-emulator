@@ -15,13 +15,21 @@
 class Display 
 {
     private:
-        SDL_Renderer* renderer{nullptr};
+        const uint32_t OFF_PIXEL;
+        const uint32_t ON_PIXEL;
+
+        uint32_t *buffer{ new uint32_t[WIDTH*HEIGHT]{} };
+
         SDL_Texture* texture{nullptr};
 
     public:
-        Display(SDL_Renderer* renderer);
+        Display(SDL_Renderer* renderer, uint32_t off_pixel, uint32_t on_pixel);
+        ~Display();
 
-        void drawPixelData(uint32_t pixels[WIDTH*HEIGHT]);
+        bool drawPixelData(uint16_t x_pos, uint16_t y_pos, uint8_t data_byte);
+
+        void clearScreen();
+        void updateScreen();
 };
 
 #endif
