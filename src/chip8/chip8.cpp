@@ -13,6 +13,7 @@
 #include <iostream>
 
 #include "chip8.hpp"
+#include "display.hpp"
 
 Chip8::Chip8() {
     this->reset();
@@ -89,7 +90,7 @@ bool Chip8::loadProgram(std::string file) {
     return true;
 };
 
-void Chip8::tick() {
+void Chip8::tick(Display &display) {
     // Fetching instruction
     uint16_t instruction{ ((memory[pc]) << 8) + memory[pc+1] };
     pc += 2;
@@ -108,7 +109,7 @@ void Chip8::tick() {
     switch( instruction & 0xF000 ) {
         case 0x0:
             if( instruction == 0x00E0 ) {
-                std::fill(display, display + WIDTH*HEIGHT, 0);
+                display.clearScreen();
             }
             break;
         case 0x1:
@@ -120,16 +121,27 @@ void Chip8::tick() {
         case 0x5:
         case 0x6:
             reg[reg_X] = address_2B;
+            break;
         case 0x7:
             reg[reg_X] += address_2B;
+            break;
         case 0x8:
         case 0x9:
         case 0xA:
             index_reg = address_3B;
+            break;
         case 0xB:
         case 0xC:
         case 0xD:
-            this->drawBytes( static_cast<uint16_t>(reg[reg_X]) + static_cast<uint16_t>(reg[reg_Y])*WIDTH, address_1B );
+            reg[0xF] = 0x00;
+            for(std::size_t i{0}; i < address_1B; ++i)
+            {
+                const bool drawn = display.drawPixelData(reg[reg_X], reg[reg_Y], memory[index_reg + i]);
+                if(drawn) {
+                    reg[0xF] = 0x01;
+                }
+            }
+            break;
         case 0xE:
         case 0xF:
     }

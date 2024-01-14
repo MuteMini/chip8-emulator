@@ -48,7 +48,7 @@ class Chip8 {
 
         bool loadProgram(std::string file);
 
-        void tick();
+        void tick(Display &display);
 };
 
 #endif

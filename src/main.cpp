@@ -7,7 +7,9 @@
 
 #include <iostream>
 #include <SDL2/SDL.h>
+
 #include "chip8.hpp"
+#include "display.hpp"
 
 int main( int argc, char* argv[] ) {
 
@@ -27,10 +29,9 @@ int main( int argc, char* argv[] ) {
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
 
-    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-    SDL_RenderDrawPoint(renderer, 0, 1);
-
-    SDL_RenderPresent(renderer);
+    // Initialize all components of the Chip-8 System
+    Chip8 cpu{};
+    Display display{renderer, 0x00000000, 0xFFFFFFFF};
 
     if( window == nullptr )
     {
