@@ -26,8 +26,9 @@ class InstructionFailed;
 class Chip8 {
     private:
         uint8_t reg[16]{};
-        uint8_t *memory{ new uint8_t[4096]{} };
         uint16_t index_reg{};
+
+        uint8_t *memory{ new uint8_t[4096]{} };
         uint16_t pc{};
 
         uint16_t stack[16]{};

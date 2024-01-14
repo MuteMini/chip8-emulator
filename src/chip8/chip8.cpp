@@ -63,13 +63,50 @@ bool Chip8::loadProgram(std::string file) {
 
     is.close();
     return true;
-}
+};
 
-bool Chip8::tick() {
+void Chip8::tick() {
     // Fetching instruction
+    uint16_t instruction{ ((memory[pc]) << 8) + memory[pc+1] };
     pc += 2;
 
-    if(instruction == 0x00E0) {
-        
+    // Decoding instruction
+
+    // Potential address bits
+    uint16_t address_3B{ instruction & 0x0FFF };
+    uint16_t address_2B{ instruction & 0x00FF };
+    uint16_t address_1B{ instruction & 0x000F };
+
+    uint16_t reg_X{ (instruction & 0x0F00) >> 8 };
+    uint16_t reg_Y{ (instruction & 0x00F0) >> 4 };
+
+    // Executing instruction
+    switch( instruction & 0xF000 ) {
+        case 0x0:
+            if( instruction == 0x00E0 ) {
+                std::fill(display, display + WIDTH*HEIGHT, 0);
+            }
+            break;
+        case 0x1:
+            pc = address_3B;
+            break;
+        case 0x2:
+        case 0x3:
+        case 0x4:
+        case 0x5:
+        case 0x6:
+            reg[reg_X] = address_2B;
+        case 0x7:
+            reg[reg_X] += address_2B;
+        case 0x8:
+        case 0x9:
+        case 0xA:
+            index_reg = address_3B;
+        case 0xB:
+        case 0xC:
+        case 0xD:
+            this->drawBytes( static_cast<uint16_t>(reg[reg_X]) + static_cast<uint16_t>(reg[reg_Y])*WIDTH, address_1B );
+        case 0xE:
+        case 0xF:
     }
 };
