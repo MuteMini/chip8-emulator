@@ -4,5 +4,7 @@ project(chip8_interpreter LANGUAGES CXX)
 set(VCPKG_TARGET_TRIPLET x64-mingw-dynamic CACHE STRING "")
 set(VCPKG_HOST_TRIPLET x64-mingw-dynamic CACHE STRING "")
 
+set(VCPKG_X64_MINGW "${PROJECT_BINARY_DIR}/vcpkg_installed/x64-mingw-dynamic")
+
 add_subdirectory(src)
 add_subdirectory(test)

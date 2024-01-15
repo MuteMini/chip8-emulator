@@ -13,7 +13,6 @@ target_link_libraries(${PROJECT_NAME} PRIVATE lib::Chip8)
 target_link_libraries(${PROJECT_NAME} PRIVATE doctest::doctest)
 target_link_libraries(${PROJECT_NAME}
     PRIVATE
-    $<TARGET_NAME_IF_EXISTS:SDL2::SDL2main>
     $<IF:$<TARGET_EXISTS:SDL2::SDL2>,SDL2::SDL2,SDL2::SDL2-static>
 )
 
