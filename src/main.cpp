@@ -33,6 +33,8 @@ int main( int argc, char* argv[] ) {
     Chip8 cpu{};
     Display display{renderer, 0x00000000, 0xFFFFFFFF};
 
+    cpu.loadProgram("\\test\\_data\\IBMLogo.ch8");
+
     if( window == nullptr )
     {
         std::cout << "Could not create the window: " << SDL_GetError() << std::endl;
@@ -43,6 +45,9 @@ int main( int argc, char* argv[] ) {
 
     while(true)
     {
+        cpu.tick(display);
+        display.updateScreen();
+        
         if( SDL_PollEvent( &windowEvent ) ) 
         {
             if( windowEvent.type == SDL_QUIT ) break;
