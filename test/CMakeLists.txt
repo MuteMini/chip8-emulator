@@ -1,6 +1,7 @@
 project(unit_tests)
 
 find_package(doctest REQUIRED)
+find_package(SDL2 CONFIG REQUIRED)
 
 add_executable(${PROJECT_NAME} test_main.cpp)
 
