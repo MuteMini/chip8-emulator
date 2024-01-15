@@ -11,6 +11,8 @@
 #define MEM_ADDR_START 0x200
 #define MEM_ADDR_END 0xE8F
 
+#define MEM_SIZE 4096
+
 #define ADDR_SPRITE 0x000
 
 #include <cstdint>
@@ -18,16 +20,17 @@
 #include <string>
 
 #include "../header.hpp"
-
+#include "display.hpp"
 
 class InstructionFailed;
 
-class Chip8 {
+class Chip8
+{
     private:
         uint8_t reg[16]{};
         uint16_t index_reg{};
 
-        uint8_t *memory{ new uint8_t[4096]{} };
+        uint8_t *memory{ new uint8_t[MEM_SIZE]{} };
         uint16_t pc{};
 
         uint16_t stack[16]{};

@@ -11,8 +11,8 @@
 #include "chip8.hpp"
 #include "display.hpp"
 
-int main( int argc, char* argv[] ) {
-
+int main( int argc, char* argv[] )
+{
     SDL_Init( SDL_INIT_EVERYTHING );
 
     SDL_Window *window = SDL_CreateWindow("Chip-8 Emulator", 
@@ -29,28 +29,35 @@ int main( int argc, char* argv[] ) {
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
 
-    // Initialize all components of the Chip-8 System
-    Chip8 cpu{};
-    Display display{renderer, 0x00000000, 0xFFFFFFFF};
-
-    cpu.loadProgram("\\test\\_data\\IBMLogo.ch8");
-
     if( window == nullptr )
     {
         std::cout << "Could not create the window: " << SDL_GetError() << std::endl;
         return 1;
     }
 
-    SDL_Event windowEvent;
+    // Initialize all components of the Chip-8 System
+    Chip8 cpu{};
+    Display display{renderer, 0x00000000, 0xFFFFFFFF};
 
-    while(true)
-    {
-        cpu.tick(display);
-        display.updateScreen();
-        
-        if( SDL_PollEvent( &windowEvent ) ) 
+    cpu.loadProgram("\\test\\_data\\IBMLogo.ch8");
+
+    // Game Loop, idea from https://stackoverflow.com/questions/26664139/sdl-keydown-and-key-recognition-not-working-properly
+    SDL_Event event;
+    bool run_loop{true};
+
+    while(run_loop)
+    {        
+        while( SDL_PollEvent( &event ) )
         {
-            if( windowEvent.type == SDL_QUIT ) break;
+            if( event.type == SDL_KEYDOWN ) 
+            {
+                cpu.tick(display);
+                display.updateScreen();
+            } 
+            else if( event.type == SDL_QUIT ) 
+            {
+                run_loop = false;
+            }
         }
     }
 

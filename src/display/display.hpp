@@ -20,7 +20,8 @@ class Display
 
         uint32_t *buffer{ new uint32_t[WIDTH*HEIGHT]{} };
 
-        SDL_Texture* texture{nullptr};
+        SDL_Renderer* renderer{};
+        SDL_Texture* texture{};
 
     public:
         Display(SDL_Renderer* renderer, uint32_t off_pixel, uint32_t on_pixel);
