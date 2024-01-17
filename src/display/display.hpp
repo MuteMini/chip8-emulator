@@ -10,7 +10,7 @@
 
 #include <SDL2/SDL_render.h>
 
-#include "../header.hpp"
+#include "header.hpp"
 
 class Display 
 {

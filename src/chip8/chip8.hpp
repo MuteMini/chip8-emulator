@@ -19,7 +19,7 @@
 #include <fstream>
 #include <string>
 
-#include "../header.hpp"
+#include "header.hpp"
 #include "display.hpp"
 
 class InstructionFailed;

@@ -3,6 +3,8 @@ project(main)
 
 find_package(SDL2 CONFIG REQUIRED)
 
+set(SHARED_INCLUDES "${CMAKE_CURRENT_LIST_DIR}/include")
+
 add_subdirectory(display)
 add_subdirectory(chip8)
 
@@ -16,6 +18,12 @@ target_link_libraries(${PROJECT_NAME}
     PRIVATE
     $<TARGET_NAME_IF_EXISTS:SDL2::SDL2main>
     $<IF:$<TARGET_EXISTS:SDL2::SDL2>,SDL2::SDL2,SDL2::SDL2-static>
+)
+
+target_include_directories(${PROJECT_NAME}
+    PUBLIC
+    ${SHARED_INCLUDES}
+    ${CMAKE_CURRENT_LIST_DIR}
 )
 
 add_custom_command(TARGET ${PROJECT_NAME}

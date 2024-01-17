@@ -13,7 +13,8 @@
 
 #include "display.hpp"
 
-Display::Display(SDL_Renderer* renderer, uint32_t off_pixel, uint32_t on_pixel) :
+Display::Display(Bus *bus, SDL_Renderer* renderer, uint32_t off_pixel, uint32_t on_pixel) :
+    Component(bus),
     renderer(renderer),
     texture(SDL_CreateTexture(
             renderer, 
@@ -22,8 +23,8 @@ Display::Display(SDL_Renderer* renderer, uint32_t off_pixel, uint32_t on_pixel) 
             WIDTH,
             HEIGHT
     )),
-    OFF_PIXEL(off_pixel),
-    ON_PIXEL(on_pixel)
+    off_pixel(off_pixel),
+    on_pixel(on_pixel)
 {};
 
 Display::~Display()
@@ -47,12 +48,12 @@ bool Display::drawPixelData(uint16_t x_pos, uint16_t y_pos, uint8_t data_byte)
         const std::size_t index{ y_pos*WIDTH + i };
         if( mask & data_byte ) 
         {
-            if( buffer[index] == ON_PIXEL ) {
-                buffer[index] = OFF_PIXEL;
+            if( buffer[index] == on_pixel ) {
+                buffer[index] = off_pixel;
                 set_to_unset = true;
             }
             else {
-                buffer[index] = ON_PIXEL;
+                buffer[index] = on_pixel;
             }
         }
         mask >>= 1;
@@ -62,7 +63,7 @@ bool Display::drawPixelData(uint16_t x_pos, uint16_t y_pos, uint8_t data_byte)
 
 void Display::clearScreen()
 {
-    std::fill(buffer, buffer + WIDTH*HEIGHT, OFF_PIXEL);
+    std::fill(buffer, buffer + WIDTH*HEIGHT, off_pixel);
 }
 
 void Display::updateScreen()
