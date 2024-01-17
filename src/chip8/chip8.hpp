@@ -20,11 +20,11 @@
 #include <string>
 
 #include "header.hpp"
-#include "display.hpp"
+#include "bus.hpp"
 
 class InstructionFailed;
 
-class Chip8
+class Chip8 : public Component
 {
     private:
         uint8_t reg[16]{};
@@ -41,17 +41,16 @@ class Chip8
 
         bool loadData(uint16_t addr, uint8_t data[], int size);
 
-        bool drawBytes(uint16_t addr, uint8_t bits);
-
     public:
-        Chip8();
+        Chip8(Bus *bus);
         ~Chip8();
 
+        void setStatusReg(bool status);
+        
         void reset();
 
         bool loadProgram(std::string file);
-
-        void tick(Display &display);
+        void tick(); 
 };
 
 #endif

@@ -15,7 +15,7 @@
 
 #include "chip8.hpp"
 
-Chip8::Chip8()
+Chip8::Chip8(Bus* bus) : Component(bus)
 {
     this->reset();
 };
@@ -32,6 +32,11 @@ bool Chip8::loadData(uint16_t addr, uint8_t data[], int size)
     std::copy(data, data+size, memory+addr);
     return true;
 };
+
+void Chip8::setStatusReg(bool status)
+{
+    reg[0xF] = status ? 0x01 : 0x00;
+}
 
 void Chip8::reset()
 {
@@ -96,7 +101,7 @@ bool Chip8::loadProgram(std::string file)
     return true;
 };
 
-void Chip8::tick(Display &display)
+void Chip8::tick()
 {
     // Fetching instruction
     if(pc >= MEM_ADDR_END)
@@ -127,16 +132,25 @@ void Chip8::tick(Display &display)
         case 0x0:
             if( instruction == 0x00E0 )
             {
-                display.clearScreen();
+                EventData event{EventType::DISPLAY_CLEAR};
+                bus->notify(this, event);
             }
             break;
         case 0x1:
             pc = address_3B;
             break;
         case 0x2:
+            // Add subroutine maddness
+            break;
         case 0x3:
+            pc += (reg[reg_X] == address_2B) ? 2 : 0;
+            break;
         case 0x4:
+            pc += (reg[reg_X] != address_2B) ? 2 : 0;
+            break;
         case 0x5:
+            pc += (reg[reg_X] == reg[reg_Y]) ? 2 : 0;
+            break;
         case 0x6:
             reg[reg_X] = address_2B;
             break;
@@ -144,25 +158,106 @@ void Chip8::tick(Display &display)
             reg[reg_X] += address_2B;
             break;
         case 0x8:
+            switch(address_1B)
+            {
+                case 0x0:
+                    reg[reg_X] = reg[reg_Y];
+                    break;
+                case 0x1:
+                    reg[reg_X] |= reg[reg_Y];
+                    break;
+                case 0x2:
+                    reg[reg_X] &= reg[reg_Y];
+                    break;
+                case 0x3:
+                    reg[reg_X] ^= reg[reg_Y];
+                    break;
+                case 0x4:
+                    setStatusReg(0xFF - reg[reg_X] < reg[reg_Y]);
+                    reg[reg_X] += reg[reg_Y];
+                    break;
+                case 0x5:
+                    setStatusReg(reg[reg_X] < reg[reg_Y]);
+                    reg[reg_X] -= reg[reg_Y];
+                    break;
+                case 0x6:
+                    setStatusReg(reg[reg_Y] & 0x01 != 0);
+                    reg[reg_X] = reg[reg_Y] >> 1;
+                    break;
+                case 0x7:
+                    setStatusReg(reg[reg_X] > reg[reg_Y]);
+                    reg[reg_X] = reg[reg_Y] - reg[reg_X];
+                    break;
+                case 0xE:
+                    setStatusReg(reg[reg_Y] & 0x80 != 0);
+                    reg[reg_X] = reg[reg_Y] << 1;
+                    break;
+            }
+            break;
         case 0x9:
+            pc += (reg[reg_X] != reg[reg_Y]) ? 2 : 0;
+            break;
         case 0xA:
             index_reg = address_3B;
             break;
         case 0xB:
+            pc = address_3B + reg[0];
+            break;
         case 0xC:
+            // Random number generator
+            break;
         case 0xD:
-            reg[0xF] = 0x00;
             for(std::size_t i{0}; i < address_1B; ++i)
             {
-                const bool drawn = display.drawPixelData(reg[reg_X], reg[reg_Y] + i, memory[index_reg + i]);
-                if(drawn)
-                {
-                    reg[0xF] = 0x01;
-                }
+                EventData event{EventType::DISPLAY_DRAW};
+                event.draw.xpos = reg[reg_X];
+                event.draw.ypos = reg[reg_Y] + i;
+                event.draw.xpos = memory[index_reg + i];
+
+                bus->notify(this, event); 
             }
             break;
         case 0xE:
+            if(address_2B == 0x9E)
+            {
+
+            }
+            else if(address_2B == 0xA1)
+            {
+
+            }
+            break;
         case 0xF:
+            switch(address_2B)
+            {
+                case 0x07:
+                    reg[reg_X] = delay;
+                    break;
+                case 0x0A:
+                    // Waiting for key press input
+                    break;
+                case 0x15:
+                    delay = reg[reg_X];
+                    break;
+                case 0x18:
+                    sound = reg[reg_X];
+                    break;
+                case 0x1E:
+                    index_reg += reg[reg_X]; 
+                    break;
+                case 0x29:
+                    // Getting pre-installed sprite data
+                    break;
+                case 0x33:
+                    // BCD in [I, I+2]
+                    break;
+                case 0x55:
+                    // Mem to reg
+                    break;
+                case 0x65:
+                    // reg to mem
+                    break;
+            }
             break;
     }
 };
