@@ -6,6 +6,8 @@ find_package(SDL2 CONFIG REQUIRED)
 set(SHARED_INCLUDES "${CMAKE_CURRENT_LIST_DIR}/include")
 
 add_subdirectory(display)
+# add_subdirectory(sound)
+# add_subdirectory(keyboard)
 add_subdirectory(chip8)
 
 add_executable(${PROJECT_NAME} main.cpp)
