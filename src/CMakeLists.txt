@@ -24,8 +24,8 @@ target_link_libraries(${PROJECT_NAME}
 
 target_include_directories(${PROJECT_NAME}
     PUBLIC
-    ${SHARED_INCLUDES}
     ${CMAKE_CURRENT_LIST_DIR}
+    ${SHARED_INCLUDES}
 )
 
 add_custom_command(TARGET ${PROJECT_NAME}
