@@ -42,7 +42,7 @@ class Chip8 : public Component
         bool loadData(uint16_t addr, uint8_t data[], int size);
 
     public:
-        Chip8(Bus *bus);
+        Chip8();
         ~Chip8();
 
         void setStatusReg(bool status);

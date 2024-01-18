@@ -15,8 +15,9 @@
 
 #include "chip8.hpp"
 
-Chip8::Chip8(Bus* bus) : Component(bus)
+Chip8::Chip8()
 {
+    
     this->reset();
 };
 
@@ -126,14 +127,12 @@ void Chip8::tick()
     uint16_t reg_Y{ static_cast<uint16_t>((instruction & 0x00F0) >> 4) };
 
     // Executing instruction
-    std::cout << ((instruction & 0xF000) >> 12) << std::endl;
     switch( (instruction & 0xF000) >> 12 )
     {
         case 0x0:
             if( instruction == 0x00E0 )
             {
-                EventData event{EventType::DISPLAY_CLEAR};
-                bus->notify(this, event);
+                bus->notify(this, { .type = EventType::DISPLAY_CLEAR });
             }
             break;
         case 0x1:
@@ -207,15 +206,17 @@ void Chip8::tick()
             // Random number generator
             break;
         case 0xD:
-            for(std::size_t i{0}; i < address_1B; ++i)
-            {
-                EventData event{EventType::DISPLAY_DRAW};
-                event.draw.xpos = reg[reg_X];
-                event.draw.ypos = reg[reg_Y] + i;
-                event.draw.xpos = memory[index_reg + i];
-
-                bus->notify(this, event); 
-            }
+            bus->notify(this, 
+                { 
+                .type = EventType::DISPLAY_DRAW,
+                .draw = {
+                    .xpos = reg[reg_X],
+                    .ypos = reg[reg_Y],
+                    .data = memory + index_reg,
+                    .size = address_1B
+                    }
+                }
+            );
             break;
         case 0xE:
             if(address_2B == 0x9E)

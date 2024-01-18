@@ -22,21 +22,13 @@ class Bus
         virtual void notify(Component *component, EventData event) = 0;
 };
 
-// Writing polymorphism module comes from https://stackoverflow.com/questions/46055737/class-variable-in-abstract-base-class-or-derived-class
-class IComponent 
-{
-    public:
-        virtual ~IComponent() = 0;
-};
-
-class Component : IComponent
+class Component 
 {
     protected:
         Bus *bus{};
-
+    
     public:
-        Component(Bus *bus) : bus(bus) {};
-        virtual ~Component() {};
+        void linkBus(Bus *bus) { this->bus = bus; };
 };
 
 #endif

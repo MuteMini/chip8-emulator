@@ -9,6 +9,7 @@
 #define EVENT_H
 
 #include <cstdint>
+#include <list>
 
 enum class EventType
 {
@@ -27,9 +28,10 @@ struct EventData
     {
         struct
         {
-            uint8_t xpos;
-            uint8_t ypos;
-            uint8_t data;
+            uint16_t xpos;
+            uint16_t ypos;
+            uint8_t *data;
+            std::size_t size;
         } draw;
     };
 };

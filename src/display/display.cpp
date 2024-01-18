@@ -10,19 +10,12 @@
 #include <SDL2/SDL.h>
 
 #include <iostream>
+#include <list>
 
 #include "display.hpp"
 
-Display::Display(Bus *bus, SDL_Renderer* renderer, uint32_t off_pixel, uint32_t on_pixel) :
-    Component(bus),
-    renderer(renderer),
-    texture(SDL_CreateTexture(
-            renderer, 
-            SDL_PIXELFORMAT_ARGB8888,
-            SDL_TEXTUREACCESS_STREAMING,
-            WIDTH,
-            HEIGHT
-    )),
+Display::Display(SDL_Texture* texture, uint32_t off_pixel, uint32_t on_pixel) :
+    texture(texture),
     off_pixel(off_pixel),
     on_pixel(on_pixel)
 {};
@@ -33,32 +26,29 @@ Display::~Display()
     delete[] buffer;
 }
 
-bool Display::drawPixelData(uint16_t x_pos, uint16_t y_pos, uint8_t data_byte)
-{   
+bool Display::drawPixelData(uint16_t x_pos, uint16_t y_pos, uint8_t data[], std::size_t size)
+{
     x_pos %= WIDTH;
     y_pos %= HEIGHT;
 
-    uint8_t mask{ 0x80 };
+    std::cout << std::dec << x_pos << "," << y_pos << std::endl;
+
     bool set_to_unset{false};
-
-    std::cout << x_pos << "," << y_pos << std::endl;
-
-    for( std::size_t i{x_pos}; i < WIDTH && i < x_pos + 8; ++i )
+    for( std::size_t col{0}; col < HEIGHT && col < size; ++col )
     {
-        const std::size_t index{ y_pos*WIDTH + i };
-        if( mask & data_byte ) 
+        uint8_t mask{ 0x80 };
+        for( std::size_t row{0}; row < WIDTH && row < 8; ++row )
         {
-            if( buffer[index] == on_pixel ) {
-                buffer[index] = off_pixel;
-                set_to_unset = true;
+            const std::size_t index{ (col + y_pos)*WIDTH + x_pos + row };
+            if( mask & data[col] )
+            {
+                set_to_unset    = (buffer[index] == on_pixel) ? true      : set_to_unset;
+                buffer[index]   = (buffer[index] == on_pixel) ? off_pixel : on_pixel;
             }
-            else {
-                buffer[index] = on_pixel;
-            }
+            mask >>= 1;
         }
-        mask >>= 1;
-    } 
-    return true;
+    }
+    return set_to_unset;
 };
 
 void Display::clearScreen()
@@ -66,7 +56,7 @@ void Display::clearScreen()
     std::fill(buffer, buffer + WIDTH*HEIGHT, off_pixel);
 }
 
-void Display::updateScreen()
+void Display::updateScreen(SDL_Renderer* renderer)
 {
     SDL_UpdateTexture( texture, NULL, buffer, WIDTH*sizeof(uint32_t) );
 
