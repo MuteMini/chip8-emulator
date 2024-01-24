@@ -1,8 +1,6 @@
 # Idea from https://stackoverflow.com/questions/55963115/how-do-i-make-my-cmake-targets-for-catch2-testing-and-project-running-more-exten
 project(main)
 
-find_package(SDL2 CONFIG REQUIRED)
-
 set(SHARED_INCLUDES "${CMAKE_CURRENT_LIST_DIR}/include")
 
 add_subdirectory(display)
