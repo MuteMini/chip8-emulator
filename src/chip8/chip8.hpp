@@ -39,17 +39,16 @@ class Chip8 : public Component
         uint8_t delay{};
         uint8_t sound{};
 
-        bool loadData(uint16_t addr, uint8_t data[], int size);
-
     public:
         Chip8();
         ~Chip8();
 
         void setStatusReg(bool status);
-        
-        void reset();
 
+        bool loadData(uint16_t addr, uint8_t data[], int size);
         bool loadProgram(std::string file);
+
+        void reset();
         void tick(); 
 };
 

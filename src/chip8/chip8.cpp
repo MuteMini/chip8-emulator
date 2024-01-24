@@ -17,7 +17,6 @@
 
 Chip8::Chip8()
 {
-    
     this->reset();
 };
 
@@ -25,6 +24,11 @@ Chip8::~Chip8()
 {
     delete[] memory;
 };
+
+void Chip8::setStatusReg(bool status)
+{
+    reg[0xF] = status ? 0x01 : 0x00;
+}
 
 bool Chip8::loadData(uint16_t addr, uint8_t data[], int size) 
 {
@@ -34,10 +38,34 @@ bool Chip8::loadData(uint16_t addr, uint8_t data[], int size)
     return true;
 };
 
-void Chip8::setStatusReg(bool status)
+// Reading file functionality comes from https://coniferproductions.com/posts/2022/10/25/reading-binary-files-cpp/
+bool Chip8::loadProgram(std::string file)
 {
-    reg[0xF] = status ? 0x01 : 0x00;
-}
+    std::filesystem::path input{std::filesystem::current_path()};
+    input += std::filesystem::u8path(file);
+
+    std::ifstream is{input, std::ios_base::in | std::ios_base::binary};
+
+    if(!is.good()) return false;
+
+    is.seekg(0, is.end);
+    int size{ static_cast<int>(is.tellg()) };
+
+    is.seekg(0, is.beg);
+
+    if(size > MEM_ADDR_END - MEM_ADDR_START)
+    {
+        is.close();
+        return false;
+    }
+
+    is.read(reinterpret_cast<char *>(memory+MEM_ADDR_START), size);
+
+    pc = MEM_ADDR_START;
+
+    is.close();
+    return true;
+};
 
 void Chip8::reset()
 {
@@ -73,35 +101,6 @@ void Chip8::reset()
     this->loadData(ADDR_SPRITE, &(sprite_data[0]), 16*5);
 };
 
-// Reading file functionality comes from https://coniferproductions.com/posts/2022/10/25/reading-binary-files-cpp/
-bool Chip8::loadProgram(std::string file)
-{
-    std::filesystem::path input{std::filesystem::current_path()};
-    input += std::filesystem::u8path(file);
-
-    std::ifstream is{input, std::ios_base::in | std::ios_base::binary};
-
-    if(!is.good()) return false;
-
-    is.seekg(0, is.end);
-    int size{ static_cast<int>(is.tellg()) };
-
-    is.seekg(0, is.beg);
-
-    if(size > MEM_ADDR_END - MEM_ADDR_START)
-    {
-        is.close();
-        return false;
-    }
-
-    is.read(reinterpret_cast<char *>(memory+MEM_ADDR_START), size);
-
-    pc = MEM_ADDR_START;
-
-    is.close();
-    return true;
-};
-
 void Chip8::tick()
 {
     // Fetching instruction
@@ -111,8 +110,6 @@ void Chip8::tick()
     }
 
     uint16_t instruction{ static_cast<uint16_t>((memory[pc] << 8) + memory[pc+1]) };
-
-    std::cout << std::hex <<  pc << ": " << instruction << std::endl;
 
     pc += 2;
 
@@ -206,17 +203,15 @@ void Chip8::tick()
             // Random number generator
             break;
         case 0xD:
-            bus->notify(this, 
-                { 
+            bus->notify(this, { 
                 .type = EventType::DISPLAY_DRAW,
                 .draw = {
                     .xpos = reg[reg_X],
                     .ypos = reg[reg_Y],
                     .data = memory + index_reg,
                     .size = address_1B
-                    }
                 }
-            );
+            });
             break;
         case 0xE:
             if(address_2B == 0x9E)
@@ -250,13 +245,24 @@ void Chip8::tick()
                     // Getting pre-installed sprite data
                     break;
                 case 0x33:
-                    // BCD in [I, I+2]
+                    uint16_t bcd{reg[reg_X]};
+                    for(std::size_t i{2}; i >= 0; ++i ) 
+                    {
+                        memory[index_reg + i] = bcd % 10;
+                        bcd /= 10;
+                    }
                     break;
                 case 0x55:
-                    // Mem to reg
+                    for(std::size_t i{0}; i <= reg_X; ++i)
+                    {
+                        memory[index_reg + i] = reg[i];
+                    }
                     break;
                 case 0x65:
-                    // reg to mem
+                    for(std::size_t i{0}; i <= reg_X; ++i)
+                    {
+                        reg[i] = memory[index_reg + i];
+                    }
                     break;
             }
             break;
