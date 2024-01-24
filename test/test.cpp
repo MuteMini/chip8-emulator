@@ -8,6 +8,12 @@
 #include <doctest/doctest.h>
 
 #include "chip8.hpp"
+#include "bus.hpp"
+
+class MockBus : public Bus
+{
+    void notify(Component *component, EventData event);
+};
 
 TEST_CASE("Chip8 functionality") {
     Chip8 chip8{};
