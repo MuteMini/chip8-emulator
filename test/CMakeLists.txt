@@ -1,8 +1,8 @@
-find_package(doctest REQUIRED)
+project(unit_tests)
 
-add_executable (unit_tests test_main.cpp)
+add_executable(${PROJECT_NAME} test.cpp)
 
-target_compile_features(unit_tests PRIVATE cxx_std_11)
+target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_17)
 
-target_link_libraries(unit_tests PRIVATE src)
-target_link_libraries(unit_tests PRIVATE doctest::doctest)
+target_link_libraries(${PROJECT_NAME} PRIVATE lib::Chip8)
+target_link_libraries(${PROJECT_NAME} PRIVATE doctest::doctest)

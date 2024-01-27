@@ -13,7 +13,9 @@
         "CMAKE_TOOLCHAIN_FILE": {
           "type": "FILEPATH",
           "value": "vcpkg/scripts/buildsystems/vcpkg.cmake"
-        }
+        },
+        "VCPKG_TARGET_TRIPLET": "x64-mingw-dynamic",
+        "VCPKG_HOST_TRIPLET": "x64-mingw-dynamic"
       }
     }
   ]
