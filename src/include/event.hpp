@@ -17,8 +17,7 @@ enum class EventType
     DISPLAY_DRAW,
     KEYBOARD_WAIT,
     KEYBOARD_GET,
-    SOUND_BEEP,
-    SOUND_STOP
+    RANDOM
 };
 
 struct EventData
@@ -33,6 +32,12 @@ struct EventData
             uint8_t *data;
             std::size_t size;
         } draw;
+        uint8_t *key;
+        struct
+        {
+            uint8_t mask;
+            uint8_t *dest;
+        } random;
     };
 };
 

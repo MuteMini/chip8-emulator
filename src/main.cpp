@@ -8,17 +8,17 @@
 #include <SDL2/SDL.h>
 
 #include <iostream>
+#include <random>
 
 #include "header.hpp"
 #include "main.hpp"
 
-// MainBus::MainBus(std::unique_ptr<Chip8> cpu, std::unique_ptr<Display> display) :
-//     cpu(cpu),
-//     display(display)
-// {
-//     this->cpu->linkBus(this);
-//     this->display->linkBus(this);
-// };
+// Code from https://stackoverflow.com/questions/288739/generate-random-numbers-uniformly-over-an-entire-range
+std::random_device rand_dev{};
+std::mt19937 generator{rand_dev()};
+std::uniform_int_distribution<uint8_t> distr(0x00, 0xFF);
+
+uint8_t generateRandom() { return distr(generator); }
 
 MainBus::MainBus(Chip8 *cpu, Display* display) :
     cpu(cpu),
@@ -45,7 +45,7 @@ void MainBus::notify(Component *component, EventData event)
         {
             display->clearScreen();
         }
-        else if ( event.type == EventType::DISPLAY_DRAW )
+        else if( event.type == EventType::DISPLAY_DRAW )
         {
             cpu->setStatusReg(
                 display->drawPixelData(
@@ -55,6 +55,10 @@ void MainBus::notify(Component *component, EventData event)
                     event.draw.size
                 )
             );
+        }
+        else if( event.type == EventType::RANDOM )
+        {
+            *event.random.dest = event.random.mask & generateRandom();
         }
     }
     else if( component == display )
@@ -91,8 +95,6 @@ int main( int argc, char* argv[] )
         return 1;
     }
 
-    // Initialize the MainBus of the Chip 8 System
-    // Initializes and links modules of Chip 8 into bus
     MainBus main_bus{new Chip8{}, new Display{texture, 0x00000000, 0xFFFFFFFF}};
 
     main_bus.getCPU().loadProgram("\\test\\_data\\IBMLogo.ch8");
@@ -106,9 +108,7 @@ int main( int argc, char* argv[] )
         {
             if( event.type == SDL_KEYDOWN ) 
             {
-                main_bus.getCPU().tick();
-
-                
+                main_bus.getCPU().execute( main_bus.getCPU().fetch() );
                 main_bus.getDisplay().updateScreen(renderer);
             } 
             else if( event.type == SDL_QUIT ) 

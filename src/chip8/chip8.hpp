@@ -5,6 +5,7 @@
     Declares the behaviours of the Chip8 system.
     Structure/variable types were made with the help of this blog: https://austinmorlan.com/posts/chip8_emulator/ 
 */
+
 #ifndef CHIP8_H
 #define CHIP8_H
 
@@ -49,7 +50,9 @@ class Chip8 : public Component
         bool loadProgram(std::string file);
 
         void reset();
-        void tick(); 
+
+        uint16_t fetch();
+        void execute(uint16_t opcode);
 };
 
 #endif
