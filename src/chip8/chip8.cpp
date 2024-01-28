@@ -104,7 +104,6 @@ uint16_t Chip8::fetch() {
         pc = MEM_ADDR_START;
     }
 
-    pc += 2;
     return static_cast<uint16_t>((memory[pc] << 8) + memory[pc+1]);
 };
 
@@ -116,6 +115,7 @@ void Chip8::execute(uint16_t opcode) {
     uint16_t reg_X{ static_cast<uint16_t>((opcode & 0x0F00) >> 8) };
     uint16_t reg_Y{ static_cast<uint16_t>((opcode & 0x00F0) >> 4) };
 
+    pc += 2;
     switch( (opcode & 0xF000) >> 12 )
     {
         case 0x0:
@@ -176,7 +176,7 @@ void Chip8::execute(uint16_t opcode) {
                     reg[reg_X] -= reg[reg_Y];
                     break;
                 case 0x6:
-                    setStatusReg(reg[reg_Y] & 0x01 != 0);
+                    setStatusReg((reg[reg_Y] & 0x01) != 0);
                     reg[reg_X] = reg[reg_Y] >> 1;
                     break;
                 case 0x7:
@@ -184,7 +184,7 @@ void Chip8::execute(uint16_t opcode) {
                     reg[reg_X] = reg[reg_Y] - reg[reg_X];
                     break;
                 case 0xE:
-                    setStatusReg(reg[reg_Y] & 0x80 != 0);
+                    setStatusReg((reg[reg_Y] & 0x80) != 0);
                     reg[reg_X] = reg[reg_Y] << 1;
                     break;
             }
@@ -241,6 +241,7 @@ void Chip8::execute(uint16_t opcode) {
                         .type = EventType::KEYBOARD_WAIT,
                         .key = &reg[reg_X]
                     });
+                    // WRITE KEYBOARD WAITNG CODE
                     break;
                 case 0x15:
                     delay = reg[reg_X];
