@@ -101,22 +101,23 @@ int main( int argc, char* argv[] )
 
     // Game Loop, idea from https://stackoverflow.com/questions/26664139/sdl-keydown-and-key-recognition-not-working-properly
     SDL_Event event;
-    bool run_loop{true};
-    while(run_loop)
+    while(true)
     {        
         while( SDL_PollEvent( &event ) )
         {
-            if( event.type == SDL_KEYDOWN ) 
+            if( event.type == SDL_QUIT ) 
+            {
+                goto end_program;
+            }
+            else if( event.type == SDL_KEYDOWN )
             {
                 main_bus.getCPU().execute( main_bus.getCPU().fetch() );
                 main_bus.getDisplay().updateScreen(renderer);
-            } 
-            else if( event.type == SDL_QUIT ) 
-            {
-                run_loop = false;
             }
         }
     }
+
+    end_program:
 
     SDL_DestroyWindow( window );
     SDL_Quit();
