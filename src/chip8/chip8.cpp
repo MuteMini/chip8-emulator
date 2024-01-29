@@ -133,7 +133,7 @@ void Chip8::execute(uint16_t opcode) {
             pc = address_3B;
             break;
         case 0x2:
-            stack[sp] = pc;
+            stack[sp] = pc - 2;
             sp += (sp < 15);
             pc = address_3B;
             break;
