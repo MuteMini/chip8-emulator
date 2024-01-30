@@ -10,6 +10,8 @@
 #include <algorithm>
 #include <array>
 #include <filesystem>
+
+#include "header.hpp"
 #include "chip8.hpp"
 
 Chip8::Chip8()
@@ -79,26 +81,12 @@ void Chip8::reset()
     
     memory = new uint8_t[4096]{};
 
-    uint8_t sprite_data[16*5]{0xF0, 0x90, 0x90, 0x90, 0xF0,
-                            0x20, 0x60, 0x20, 0x20, 0x70,
-                            0xF0, 0x10, 0xF0, 0x80, 0xF0,
-                            0xF0, 0x10, 0xF0, 0x10, 0xF0,
-                            0x90, 0x90, 0xF0, 0x10, 0x10,
-                            0xF0, 0x80, 0xF0, 0x10, 0xF0,
-                            0xF0, 0x80, 0xF0, 0x90, 0xF0,
-                            0xF0, 0x10, 0x20, 0x40, 0x40,
-                            0xF0, 0x90, 0xF0, 0x90, 0xF0,
-                            0xF0, 0x90, 0xF0, 0x10, 0xF0,
-                            0xF0, 0x90, 0xF0, 0x90, 0x90,
-                            0xE0, 0x90, 0xE0, 0x90, 0xE0,
-                            0xF0, 0x80, 0x80, 0x80, 0xF0,
-                            0xE0, 0x90, 0x90, 0x90, 0xE0,
-                            0xF0, 0x80, 0xF0, 0x80, 0xF0,
-                            0xF0, 0x80, 0xF0, 0x80, 0x80};
+    uint8_t sprite_data[HEX_SPRITE_LENGTH]{HEX_SPRITE_DATA};
     this->loadData(ADDR_SPRITE, &(sprite_data[0]), 16*5);
 };
 
-uint16_t Chip8::fetch() {
+uint16_t Chip8::fetch()
+{
     if(pc >= MEM_ADDR_END)
     {
         pc = MEM_ADDR_START;
@@ -107,7 +95,8 @@ uint16_t Chip8::fetch() {
     return static_cast<uint16_t>((memory[pc] << 8) + memory[pc+1]);
 };
 
-void Chip8::execute(uint16_t opcode) {
+void Chip8::execute(uint16_t opcode)
+{   
     uint16_t address_3B{ static_cast<uint16_t>(opcode & 0x0FFF) };
     uint16_t address_2B{ static_cast<uint16_t>(opcode & 0x00FF) };
     uint16_t address_1B{ static_cast<uint16_t>(opcode & 0x000F) };
@@ -226,8 +215,10 @@ void Chip8::execute(uint16_t opcode) {
                 .key = &key,
             });
 
-            pc += ((address_2B == 0x9E && (reg[reg_X] & 0x0F) == key) 
-                || (address_2B == 0xA1 && (reg[reg_X] & 0x0F) != key)) ? 2 : 0;
+            if(reg[reg_X] > 0xF) break;
+
+            pc += ((address_2B == 0x9E && reg[reg_X] == key) 
+                || (address_2B == 0xA1 && reg[reg_X] != key)) ? 2 : 0;
             break;
         }
         case 0xF:
@@ -238,10 +229,10 @@ void Chip8::execute(uint16_t opcode) {
                     break;
                 case 0x0A:
                     bus->notify(this, { 
-                        .type = EventType::KEYBOARD_WAIT,
+                        .type = EventType::KEYBOARD_GET,
                         .key = &reg[reg_X]
                     });
-                    // WRITE KEYBOARD WAITNG CODE
+                    pc -= (reg[reg_X] == KEY_NOTPRESSED) ? 2 : 0;
                     break;
                 case 0x15:
                     delay = reg[reg_X];
@@ -258,9 +249,9 @@ void Chip8::execute(uint16_t opcode) {
                 case 0x33:
                 {   
                     uint16_t bcd{reg[reg_X]};
-                    for(std::size_t i{2}; i >= 0; ++i ) 
+                    for(std::size_t i{0}; i <= 2; ++i) 
                     {
-                        memory[index_reg + i] = bcd % 10;
+                        memory[index_reg + (2 - i)] = bcd % 10;
                         bcd /= 10;
                     }
                     break;

@@ -5,7 +5,7 @@ set(SHARED_INCLUDES "${CMAKE_CURRENT_LIST_DIR}/include")
 
 add_subdirectory(display)
 # add_subdirectory(sound)
-# add_subdirectory(keyboard)
+add_subdirectory(keyboard)
 add_subdirectory(chip8)
 
 add_executable(${PROJECT_NAME} main.cpp)
@@ -13,6 +13,7 @@ add_executable(${PROJECT_NAME} main.cpp)
 target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_17)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE lib::Display)
+target_link_libraries(${PROJECT_NAME} PRIVATE lib::Keyboard)
 target_link_libraries(${PROJECT_NAME} PRIVATE lib::Chip8)
 target_link_libraries(${PROJECT_NAME}
     PRIVATE

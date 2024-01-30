@@ -15,7 +15,6 @@ enum class EventType
 {
     DISPLAY_CLEAR,
     DISPLAY_DRAW,
-    KEYBOARD_WAIT,
     KEYBOARD_GET,
     RANDOM
 };
