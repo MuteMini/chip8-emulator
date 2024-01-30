@@ -43,6 +43,8 @@ class MockBus : public Bus
 
 const uint8_t SPRITE_DATA[HEX_SPRITE_LENGTH]{HEX_SPRITE_DATA};
 
+// Excluding 0NNN (unused instruction in emulators), covers all of Chip8's instruction functionality.
+// Unique case for FX18: is covered in the Sound Integration Test.
 TEST_CASE("Chip8 Unit Tests")
 {
     MockBus bus{};
@@ -252,6 +254,10 @@ TEST_CASE("Chip8 Unit Tests")
             }
         }
     }
-
-    // Currently missing FX18
 }
+
+TEST_CASE("Keyboard Integration Test") {}
+
+TEST_CASE("Sound Integration Test") {}
+
+TEST_CASE("Display Integration Test") {}
