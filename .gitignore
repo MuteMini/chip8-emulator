@@ -1,4 +1,5 @@
 vcpkg/
+_data/
 
 # Individual project installations
 /.vscode
