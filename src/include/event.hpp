@@ -27,8 +27,8 @@ struct EventData
     {
         struct
         {
-            uint16_t xpos;
-            uint16_t ypos;
+            uint8_t xpos;
+            uint8_t ypos;
             uint8_t *data;
             std::size_t size;
         } draw;
