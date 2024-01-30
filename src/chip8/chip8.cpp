@@ -100,7 +100,8 @@ void Chip8::reset()
     this->loadData(ADDR_SPRITE, &(sprite_data[0]), 16*5);
 };
 
-uint16_t Chip8::fetch() {
+uint16_t Chip8::fetch()
+{
     if(pc >= MEM_ADDR_END)
     {
         pc = MEM_ADDR_START;
@@ -109,7 +110,8 @@ uint16_t Chip8::fetch() {
     return static_cast<uint16_t>((memory[pc] << 8) + memory[pc+1]);
 };
 
-void Chip8::execute(uint16_t opcode) {
+void Chip8::execute(uint16_t opcode)
+{
     uint16_t address_3B{ static_cast<uint16_t>(opcode & 0x0FFF) };
     uint16_t address_2B{ static_cast<uint16_t>(opcode & 0x00FF) };
     uint16_t address_1B{ static_cast<uint16_t>(opcode & 0x000F) };

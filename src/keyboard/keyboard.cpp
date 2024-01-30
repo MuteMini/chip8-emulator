@@ -35,9 +35,12 @@ uint8_t Keyboard::getKey() {
     return key;
 };
 
-void Keyboard::storeKey(SDL_Scancode scancode) {
-    for(int i{0}; i < 16; i++) {
-        if(KEYBOARD_MAP[i] == scancode) {
+void Keyboard::storeKey(SDL_Scancode scancode)
+{
+    for(int i{0}; i < 16; i++)
+    {
+        if(KEYBOARD_MAP[i] == scancode)
+        {
             key = scancode;
             break;
         }

@@ -19,28 +19,34 @@ class MockBus : public Bus
 
         EventData recentData{};
 
-        MockBus() : cpu() {
+        MockBus() : cpu()
+        {
             cpu.linkBus(this);
         };
 
-        void notify(Component *component, EventData event) {
+        void notify(Component *component, EventData event)
+        {
             recentData = event;
         };
 
-        uint8_t checkRegValue(uint8_t reg) {
+        uint8_t checkRegValue(uint8_t reg)
+        {
             cpu.execute(static_cast<uint16_t>(0xD000 + (reg << 8)));
             return recentData.draw.xpos;
         };
 };
 
-TEST_CASE("Chip8 Unit Tests") {
+TEST_CASE("Chip8 Unit Tests")
+{
     MockBus bus{};
 
-    SUBCASE("Loading program") {
+    SUBCASE("Loading program")
+    {
         REQUIRE_FALSE(bus.cpu.loadProgram("\\test\\_data\\nofile.ch8"));
         REQUIRE(bus.cpu.loadProgram("\\test\\_data\\IBMLogo.ch8"));
 
-        SUBCASE("Fetching instructions") {
+        SUBCASE("Fetching instructions")
+        {
             bus.cpu.loadProgram("\\test\\_data\\IBMLogo.ch8");
 
             CHECK_EQ(bus.cpu.fetch(), 0x00E0);
@@ -51,7 +57,8 @@ TEST_CASE("Chip8 Unit Tests") {
         }
     }
 
-    SUBCASE("Verify bus & reg instructions") {
+    SUBCASE("Verify bus & reg instructions")
+    {
         bus.cpu.execute(0x00E0);
         CHECK_MESSAGE(bus.recentData.type == EventType::DISPLAY_CLEAR, "INSTR: 00E0 (1/34)");
  
@@ -60,7 +67,7 @@ TEST_CASE("Chip8 Unit Tests") {
         CHECK(bus.recentData.draw.size == 0);
 
         bus.cpu.execute(0xF20A);
-        CHECK_MESSAGE(bus.recentData.type == EventType::KEYBOARD_WAIT, "INSTR: FX0A (3/34)");
+        CHECK_MESSAGE(bus.recentData.type == EventType::KEYBOARD_GET, "INSTR: FX0A (3/34)");
 
         bus.cpu.execute(0xC123);
         CHECK_MESSAGE(bus.recentData.type == EventType::RANDOM, "INSTR: CXNN (4/34)");
@@ -141,17 +148,20 @@ TEST_CASE("Chip8 Unit Tests") {
         CHECK_MESSAGE(bus.checkRegValue(5) == 0x25, "INSTR: FX15 (29/34)");
     }
 
-    SUBCASE("Loading data") {
+    SUBCASE("Loading data")
+    {
         uint8_t test_data[8]{0, 1, 0, 2, 0, 3, 0, 4};
         REQUIRE(bus.cpu.loadData(0x200, test_data, 8));
 
-        for(uint8_t i{1}; i <= 4; ++i) {
+        for(uint8_t i{1}; i <= 4; ++i)
+        {
             CHECK_EQ(bus.cpu.fetch(), i);
             bus.cpu.execute(0);
         }
         CHECK_EQ(bus.cpu.fetch(), 0x0000);
 
-        SUBCASE("Verify address instructions") {
+        SUBCASE("Verify address instructions")
+        {
             bus.cpu.execute(0x6020);
             bus.cpu.execute(0x6104);
             bus.cpu.execute(0x6411);
