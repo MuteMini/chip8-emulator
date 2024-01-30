@@ -23,14 +23,13 @@ class MainBus : public Bus
         Display *display{};
 
     public:
-        MainBus(Chip8 *cpu, Display* display);
+        MainBus(Chip8 *cpu, Keyboard *keyboard, Display *display);
         ~MainBus();
 
         void notify(Component *component, EventData event);
 
-        void setDisplay(Display *display);
-
         Chip8& getCPU();
+        Keyboard& getKeyboard();
         Display& getDisplay();
 };
 

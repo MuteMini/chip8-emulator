@@ -10,6 +10,8 @@
 #include <algorithm>
 #include <array>
 #include <filesystem>
+
+#include "header.hpp"
 #include "chip8.hpp"
 
 Chip8::Chip8()
@@ -238,10 +240,10 @@ void Chip8::execute(uint16_t opcode) {
                     break;
                 case 0x0A:
                     bus->notify(this, { 
-                        .type = EventType::KEYBOARD_WAIT,
+                        .type = EventType::KEYBOARD_GET,
                         .key = &reg[reg_X]
                     });
-                    // WRITE KEYBOARD WAITNG CODE
+                    pc -= (reg[reg_X] == KEY_NOTPRESSED) ? 2 : 0;
                     break;
                 case 0x15:
                     delay = reg[reg_X];

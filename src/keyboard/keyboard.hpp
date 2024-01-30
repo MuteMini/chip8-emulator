@@ -25,7 +25,7 @@ class Keyboard : public Component {
 
         uint8_t getKey();
 
-        void pollKey();
+        void storeKey(SDL_Scancode scancode);
 };
 
 #endif

@@ -20,17 +20,20 @@ std::uniform_int_distribution<uint8_t> distr(0x00, 0xFF);
 
 uint8_t generateRandom() { return distr(generator); }
 
-MainBus::MainBus(Chip8 *cpu, Display* display) :
+MainBus::MainBus(Chip8 *cpu, Keyboard *keyboard, Display* display) :
     cpu(cpu),
+    keyboard(keyboard),
     display(display)
 {
     this->cpu->linkBus(this);
+    this->keyboard->linkBus(this);
     this->display->linkBus(this);
 };
 
 MainBus::~MainBus()
 {
     delete cpu;
+    delete keyboard;
     delete display;
 };
 
@@ -41,29 +44,28 @@ void MainBus::notify(Component *component, EventData event)
 {
     if( component == cpu )
     {
-        if( event.type == EventType::DISPLAY_CLEAR )
+        switch(event.type)
         {
-            display->clearScreen();
+            case EventType::DISPLAY_CLEAR:
+                display->clearScreen();
+                break;
+            case EventType::DISPLAY_DRAW:
+                cpu->setStatusReg(
+                    display->drawPixelData(
+                        event.draw.xpos, 
+                        event.draw.ypos, 
+                        event.draw.data, 
+                        event.draw.size
+                    )
+                );
+                break;
+            case EventType::KEYBOARD_GET:
+                *event.key = keyboard->getKey();
+                break;
+            case EventType::RANDOM: 
+                *event.random.dest = event.random.mask & generateRandom();
+                break;
         }
-        else if( event.type == EventType::DISPLAY_DRAW )
-        {
-            cpu->setStatusReg(
-                display->drawPixelData(
-                    event.draw.xpos, 
-                    event.draw.ypos, 
-                    event.draw.data, 
-                    event.draw.size
-                )
-            );
-        }
-        else if( event.type == EventType::RANDOM )
-        {
-            *event.random.dest = event.random.mask & generateRandom();
-        }
-    }
-    else if( component == display )
-    {
-
     }
 }
 
@@ -95,7 +97,7 @@ int main( int argc, char* argv[] )
         return 1;
     }
 
-    MainBus main_bus{new Chip8{}, new Display{texture, 0x00000000, 0xFFFFFFFF}};
+    MainBus main_bus{new Chip8{}, new Keyboard{}, new Display{texture, 0x00000000, 0xFFFFFFFF}};
 
     main_bus.getCPU().loadProgram("\\test\\_data\\IBMLogo.ch8");
 
@@ -103,6 +105,9 @@ int main( int argc, char* argv[] )
     SDL_Event event;
     while(true)
     {        
+        main_bus.getCPU().execute( main_bus.getCPU().fetch() );
+        main_bus.getDisplay().updateScreen( renderer );
+
         while( SDL_PollEvent( &event ) )
         {
             if( event.type == SDL_QUIT ) 
@@ -111,10 +116,11 @@ int main( int argc, char* argv[] )
             }
             else if( event.type == SDL_KEYDOWN )
             {
-                main_bus.getCPU().execute( main_bus.getCPU().fetch() );
-                main_bus.getDisplay().updateScreen(renderer);
+                main_bus.getKeyboard().storeKey( event.key.keysym.scancode );
             }
         }
+
+        SDL_Delay(10);
     }
 
     end_program:

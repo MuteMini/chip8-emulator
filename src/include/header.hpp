@@ -5,4 +5,6 @@
 #define HEIGHT 32
 #define SCALE 8
 
+#define KEY_NOTPRESSED 0x10
+
 #endif
