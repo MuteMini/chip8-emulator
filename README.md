@@ -4,7 +4,7 @@ A simple GUI Chip-8 Emulator used to learn the basics of emulation.
 
 ## Local Development
 
-For this solo development, I decided to step into utilizing vcpkg and cmake to help project builds. Currently the CMake file only supports the x64-mingw triplet environment. Further build environments may be added depending on the final scope of the project.
+For this solo development, I decided to utilize vcpkg and cmake to help build the project. Currently, the CMake file only supports the x64-mingw triplet environment. Further build environments may be added depending on the final scope of the project.
 
 ### Windows Environment
 
@@ -26,5 +26,13 @@ To set up vcpkg (package manager):
 - Run `./vcpkg/bootstrap-vcpkg.bat` to compile vcpkg.
 - To run vcpkg commands, use `./vcpkg/vcpkg.exe` on the parent folder.
 
-Always make sure to run the batch file within `/script` from the root folder, or else files will not be found or built in proper directories.
+Always make sure to run the batch file `/script/rebuild.bat` from the root folder, or else files will not be found or built in proper directories.
 The config file allows future command paths to be included in the project without dependency to the PATH environment variable.ninja
+
+## Project Design
+
+
+
+## Testing
+
+The project comes with a separate testing build using `doctest`. This can be downloaded with `vcpkg`. Some of the project was designed with testability in mind. (e.g. Chip8 class has `.fetch()` and `.execute()` as seperate classes to test specific op code combinations)
