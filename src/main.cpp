@@ -38,6 +38,7 @@ MainBus::~MainBus()
 };
 
 Chip8& MainBus::getCPU()        { return *cpu; };
+Keyboard& MainBus::getKeyboard()  { return *keyboard; };
 Display& MainBus::getDisplay()  { return *display; };
 
 void MainBus::notify(Component *component, EventData event)
@@ -99,7 +100,7 @@ int main( int argc, char* argv[] )
 
     MainBus main_bus{new Chip8{}, new Keyboard{}, new Display{texture, 0x00000000, 0xFFFFFFFF}};
 
-    main_bus.getCPU().loadProgram("\\test\\_data\\IBMLogo.ch8");
+    main_bus.getCPU().loadProgram("\\test\\_data\\keypad_test.ch8");
 
     // Game Loop, idea from https://stackoverflow.com/questions/26664139/sdl-keydown-and-key-recognition-not-working-properly
     SDL_Event event;
