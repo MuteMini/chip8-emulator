@@ -27,6 +27,11 @@ class MockBus : public Bus
         void notify(Component *component, EventData event)
         {
             recentData = event;
+
+            if(event.type == EventType::KEYBOARD_GET) 
+            {
+                *event.key = 0x3;
+            }
         };
 
         uint8_t checkRegValue(uint8_t reg)
@@ -36,6 +41,10 @@ class MockBus : public Bus
         };
 };
 
+const uint8_t SPRITE_DATA[HEX_SPRITE_LENGTH]{HEX_SPRITE_DATA};
+
+// Excluding 0NNN (unused instruction in emulators), covers all of Chip8's instruction functionality.
+// Unique case for FX18: is covered in the Sound Integration Test.
 TEST_CASE("Chip8 Unit Tests")
 {
     MockBus bus{};
@@ -68,6 +77,7 @@ TEST_CASE("Chip8 Unit Tests")
 
         bus.cpu.execute(0xF20A);
         CHECK_MESSAGE(bus.recentData.type == EventType::KEYBOARD_GET, "INSTR: FX0A (3/34)");
+        CHECK_MESSAGE(bus.checkRegValue(2) == 0x03, "INSTR: FX0A (3/34)");
 
         bus.cpu.execute(0xC123);
         CHECK_MESSAGE(bus.recentData.type == EventType::RANDOM, "INSTR: CXNN (4/34)");
@@ -167,6 +177,8 @@ TEST_CASE("Chip8 Unit Tests")
             bus.cpu.execute(0x6411);
             bus.cpu.execute(0x6522);
             bus.cpu.execute(0x6611);
+            bus.cpu.execute(0x6703);
+            bus.cpu.execute(0x6804);
 
             bus.cpu.execute(0x1200);
             CHECK_MESSAGE(bus.cpu.fetch() == 0x0001, "INSTR: 1200 (16/34)");
@@ -215,8 +227,37 @@ TEST_CASE("Chip8 Unit Tests")
             bus.cpu.execute(0xF465);
             CHECK_MESSAGE(bus.checkRegValue(0) == 0x11, "INSTR: FX1E, FX65 (27/34)");
             CHECK_MESSAGE(bus.checkRegValue(1) == 0x22, "INSTR: FX1E, FX65 (27/34)");
+
+            bus.cpu.execute(0x1200 - 2);
+            bus.cpu.execute(0xE89E);
+            CHECK_MESSAGE(bus.cpu.fetch() == 0x0001, "INSTR: EX9E not skipped (30/34)");
+            bus.cpu.execute(0xE79E);
+            CHECK_MESSAGE(bus.cpu.fetch() == 0x0003, "INSTR: EX9E skipped (30/34)");
+
+            bus.cpu.execute(0x1200 - 2);
+            bus.cpu.execute(0xE7A1);
+            CHECK_MESSAGE(bus.cpu.fetch() == 0x0001, "INSTR: EXA1 not skipped (31/34)");
+            bus.cpu.execute(0xE8A1);
+            CHECK_MESSAGE(bus.cpu.fetch() == 0x0003, "INSTR: EXA1 skipped (31/34)");
+
+            bus.cpu.execute(0xA300);
+            bus.cpu.execute(0xF533);
+            bus.cpu.execute(0xF265);
+            CHECK_MESSAGE(bus.checkRegValue(0) == 0, "INSTR: FX33 (32/34)");
+            CHECK_MESSAGE(bus.checkRegValue(1) == 3, "INSTR: FX33 (32/34)");
+            CHECK_MESSAGE(bus.checkRegValue(2) == 4, "INSTR: FX33 (32/34)");
+
+            bus.cpu.execute(0xF729);
+            bus.cpu.execute(0xD125);
+            for(std::size_t i{0}; i < 5; i++) {
+                CHECK_MESSAGE(bus.recentData.draw.data[i] == SPRITE_DATA[15 + i], "INSTR: FX29 (33/34)");
+            }
         }
     }
-
-    // Currently missing EX9E, EXA1, FX18, FX29, FX33
 }
+
+TEST_CASE("Keyboard Integration Test") {}
+
+TEST_CASE("Sound Integration Test") {}
+
+TEST_CASE("Display Integration Test") {}
