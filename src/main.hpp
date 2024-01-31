@@ -18,15 +18,14 @@
 class MainBus : public Bus
 {
     private:
-        Chip8 *cpu{};
-        Keyboard *keyboard{};
-        Display *display{};
+        Chip8 cpu;
+        Keyboard keyboard;
+        Display display;
 
     public:
-        MainBus(Chip8 *cpu, Keyboard *keyboard, Display *display);
-        ~MainBus();
+        MainBus(SDL_Texture *texture);
 
-        void notify(Component *component, EventData event);
+        void notify(EventData event);
 
         Chip8& getCPU();
         Keyboard& getKeyboard();

@@ -9,22 +9,22 @@
 
 #include <doctest/doctest.h>
 
-#include "chip8.hpp"
+#include "logger.hpp"
 #include "bus.hpp"
+#include "chip8.hpp"
 
 class MockBus : public Bus
 {
     public:
-        Chip8 cpu{};
+        Chip8 cpu;
 
         EventData recentData{};
 
-        MockBus() : cpu()
-        {
-            cpu.linkBus(this);
-        };
+        MockBus() :
+            cpu(Logger{}, *this)
+        {};
 
-        void notify(Component *component, EventData event)
+        void notify(EventData event)
         {
             recentData = event;
 

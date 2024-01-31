@@ -14,6 +14,7 @@
 #include <cstdint>
 
 #include "header.hpp"
+#include "logger.hpp"
 #include "bus.hpp"
 
 class Keyboard : public Component {
@@ -21,7 +22,7 @@ class Keyboard : public Component {
         uint8_t key;
 
     public:
-        Keyboard();
+        Keyboard(Logger logger, Bus& bus);
 
         uint8_t getKey();
 

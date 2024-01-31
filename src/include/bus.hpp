@@ -13,22 +13,24 @@
 #include <cstdint>
 
 #include "event.hpp"
+#include "logger.hpp"
 
 class Component;
 
 class Bus
 {
     public:
-        virtual void notify(Component *component, EventData event) = 0;
+        virtual void notify(EventData event) = 0;
 };
 
 class Component 
 {
     protected:
-        Bus *bus{};
+        Logger logger;
+        Bus& bus;
     
     public:
-        void linkBus(Bus *bus) { this->bus = bus; };
+        Component(Logger logger, Bus& bus) : logger(logger), bus(bus) {};
 };
 
 #endif

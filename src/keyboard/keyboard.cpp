@@ -6,7 +6,10 @@
     Passes events onto Chip8 through the bus.
 */
 
+#include <iostream>
+
 #include "header.hpp"
+#include "logger.hpp"
 #include "keyboard.hpp"
 
 // Index represents button #.
@@ -29,7 +32,10 @@ const SDL_Scancode KEYBOARD_MAP[16] {
     SDL_SCANCODE_V,
 };
 
-Keyboard::Keyboard() {};
+Keyboard::Keyboard(Logger logger, Bus& bus) :
+    Component(logger, bus),
+    key(KEY_NOTPRESSED)
+{};
 
 uint8_t Keyboard::getKey() {
     return key;
@@ -37,12 +43,12 @@ uint8_t Keyboard::getKey() {
 
 void Keyboard::storeKey(SDL_Scancode scancode)
 {
-    for(int i{0}; i < 16; i++)
+    for(uint8_t i{0}; i < 16; i++)
     {
         if(KEYBOARD_MAP[i] == scancode)
         {
-            key = scancode;
-            break;
+            key = i;
+            return;
         }
     }
     key = KEY_NOTPRESSED;

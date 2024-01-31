@@ -41,13 +41,15 @@ class Chip8 : public Component
         uint8_t sound{};
 
     public:
-        Chip8();
+        Chip8(Logger logger, Bus& bus);
         ~Chip8();
 
         void setStatusReg(bool status);
 
         bool loadData(uint16_t addr, uint8_t data[], int size);
         bool loadProgram(std::string file);
+
+        void tickTimer();
 
         void reset();
 

@@ -12,9 +12,10 @@
 #include <filesystem>
 
 #include "header.hpp"
+#include "logger.hpp"
 #include "chip8.hpp"
 
-Chip8::Chip8()
+Chip8::Chip8(Logger logger, Bus& bus) : Component(logger, bus)
 {
     this->reset();
 };
@@ -66,6 +67,12 @@ bool Chip8::loadProgram(std::string file)
     return true;
 };
 
+void Chip8::tickTimer()
+{
+    delay -= (delay > 0);
+    sound -= (sound > 0);
+};
+
 void Chip8::reset()
 {
     index_reg = 0;
@@ -104,13 +111,20 @@ void Chip8::execute(uint16_t opcode)
     uint16_t reg_X{ static_cast<uint16_t>((opcode & 0x0F00) >> 8) };
     uint16_t reg_Y{ static_cast<uint16_t>((opcode & 0x00F0) >> 4) };
 
+    std::cout << std::hex << +pc << ":" << +opcode << " [";
+    for(int i{0}; i < 15; ++i)
+    {
+        std::cout << std::hex << +reg[i] << " ";
+    }
+    std::cout << "]" << std::endl; 
+
     pc += 2;
     switch( (opcode & 0xF000) >> 12 )
     {
         case 0x0:
             if( opcode == 0x00E0 )
             {
-                bus->notify(this, { .type = EventType::DISPLAY_CLEAR });
+                bus.notify({ .type = EventType::DISPLAY_CLEAR });
             }
             else if( opcode == 0x00EE )
             {
@@ -122,7 +136,7 @@ void Chip8::execute(uint16_t opcode)
             pc = address_3B;
             break;
         case 0x2:
-            stack[sp] = pc - 2;
+            stack[sp] = pc;
             sp += (sp < 15);
             pc = address_3B;
             break;
@@ -188,7 +202,7 @@ void Chip8::execute(uint16_t opcode)
             pc = address_3B + reg[0];
             break;
         case 0xC:
-            bus->notify(this, {
+            bus.notify({
                 .type = EventType::RANDOM,
                 .random = {
                     .mask = static_cast<uint8_t>(address_2B),
@@ -197,7 +211,7 @@ void Chip8::execute(uint16_t opcode)
             });
             break;
         case 0xD:
-            bus->notify(this, { 
+            bus.notify({ 
                 .type = EventType::DISPLAY_DRAW,
                 .draw = {
                     .xpos = reg[reg_X],
@@ -210,7 +224,7 @@ void Chip8::execute(uint16_t opcode)
         case 0xE:
         {
             uint8_t key{0x10};
-            bus->notify(this, {
+            bus.notify({
                 .type = EventType::KEYBOARD_GET,
                 .key = &key,
             });
@@ -228,7 +242,7 @@ void Chip8::execute(uint16_t opcode)
                     reg[reg_X] = delay;
                     break;
                 case 0x0A:
-                    bus->notify(this, { 
+                    bus.notify({ 
                         .type = EventType::KEYBOARD_GET,
                         .key = &reg[reg_X]
                     });
