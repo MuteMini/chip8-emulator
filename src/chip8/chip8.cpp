@@ -111,8 +111,8 @@ void Chip8::execute(uint16_t opcode)
     uint16_t reg_X{ static_cast<uint16_t>((opcode & 0x0F00) >> 8) };
     uint16_t reg_Y{ static_cast<uint16_t>((opcode & 0x00F0) >> 4) };
 
-    logger << std::hex << +pc << ":" << +opcode << " [";
-    for(int i{0}; i < 15; ++i)
+    logger << std::hex << +pc << ":" << +opcode << "\t[";
+    for(int i{0}; i <= 15; ++i)
     {
         logger << std::hex << +reg[i] << " ";
     }
@@ -175,7 +175,7 @@ void Chip8::execute(uint16_t opcode)
                     reg[reg_X] += reg[reg_Y];
                     break;
                 case 0x5:
-                    setStatusReg(reg[reg_X] < reg[reg_Y]);
+                    setStatusReg(reg[reg_X] > reg[reg_Y]);
                     reg[reg_X] -= reg[reg_Y];
                     break;
                 case 0x6:
@@ -183,7 +183,7 @@ void Chip8::execute(uint16_t opcode)
                     reg[reg_X] = reg[reg_Y] >> 1;
                     break;
                 case 0x7:
-                    setStatusReg(reg[reg_X] > reg[reg_Y]);
+                    setStatusReg(reg[reg_X] < reg[reg_Y]);
                     reg[reg_X] = reg[reg_Y] - reg[reg_X];
                     break;
                 case 0xE:

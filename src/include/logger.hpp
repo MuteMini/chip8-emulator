@@ -28,9 +28,7 @@ class Logger
         Logger(std::string fileName) : stream{}
         {
             std::filesystem::path logFile{std::filesystem::current_path()};
-            logFile += std::filesystem::u8path("\\_logs\\"+fileName);
-
-            std::cout << logFile.parent_path();
+            logFile += std::filesystem::u8path("\\logs\\"+fileName);
 
             stream.open(logFile, std::ios::trunc);
         };

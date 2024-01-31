@@ -118,11 +118,11 @@ TEST_CASE("Chip8 Unit Tests")
         bus.cpu.execute(0x6235);
         bus.cpu.execute(0x8215);
         CHECK_MESSAGE(bus.checkRegValue(2) == 0x10, "INSTR: 8XY5 (12/34)");
-        CHECK_MESSAGE(bus.checkRegValue(15) == 0, "VF 0 when borrow not occured");
+        CHECK_MESSAGE(bus.checkRegValue(15) == 1, "VF 1 when borrow occured");
         bus.cpu.execute(0x6215);
         bus.cpu.execute(0x8215);
         CHECK_MESSAGE(bus.checkRegValue(2) == 0xF0, "INSTR: 8XY5 (12/34)");
-        CHECK_MESSAGE(bus.checkRegValue(15) == 1, "VF 1 when borrow occured");
+        CHECK_MESSAGE(bus.checkRegValue(15) == 0, "VF 0 when borrow not occured");
 
         bus.cpu.execute(0x6324);
         bus.cpu.execute(0x8236);
@@ -136,11 +136,11 @@ TEST_CASE("Chip8 Unit Tests")
         bus.cpu.execute(0x6215);
         bus.cpu.execute(0x8217);
         CHECK_MESSAGE(bus.checkRegValue(2) == 0x10, "INSTR: 8XY7 (14/34)");
-        CHECK_MESSAGE(bus.checkRegValue(15) == 0, "VF 0 when borrow not occured");
+        CHECK_MESSAGE(bus.checkRegValue(15) == 1, "VF 1 when borrow occured");
         bus.cpu.execute(0x6235);
         bus.cpu.execute(0x8217);
         CHECK_MESSAGE(bus.checkRegValue(2) == 0xF0, "INSTR: 8XY7 (14/34)");
-        CHECK_MESSAGE(bus.checkRegValue(15) == 1, "VF 1 when borrow occured");
+        CHECK_MESSAGE(bus.checkRegValue(15) == 0, "VF 0 when borrow not occured");
 
         bus.cpu.execute(0x6324);
         bus.cpu.execute(0x823E);
