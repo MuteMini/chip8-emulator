@@ -9,12 +9,13 @@
 #include <SDL2/SDL_render.h>
 #include <SDL2/SDL.h>
 
-#include <iostream>
 #include <list>
 
 #include "display.hpp"
+#include "logger.hpp"
 
-Display::Display(SDL_Texture* texture, uint32_t off_pixel, uint32_t on_pixel) :
+Display::Display(Bus& bus, SDL_Texture* texture, uint32_t off_pixel, uint32_t on_pixel) : 
+    Component("display_log.txt", bus),
     texture(texture),
     off_pixel(off_pixel),
     on_pixel(on_pixel)
@@ -30,8 +31,6 @@ bool Display::drawPixelData(uint16_t x_pos, uint16_t y_pos, uint8_t data[], std:
 {
     x_pos %= WIDTH;
     y_pos %= HEIGHT;
-
-    std::cout << std::dec << x_pos << "," << y_pos << std::endl;
 
     bool set_to_unset{false};
     for( std::size_t col{0}; col < HEIGHT && col < size; ++col )

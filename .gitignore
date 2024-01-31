@@ -1,5 +1,6 @@
-vcpkg/
-_data/
+/vcpkg/
+*/_data/
+/logs
 
 # Individual project installations
 /.vscode

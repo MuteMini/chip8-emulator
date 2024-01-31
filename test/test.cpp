@@ -6,25 +6,26 @@
 */
 
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
+#define DEBUG_OFF
 
 #include <doctest/doctest.h>
 
-#include "chip8.hpp"
+#include "logger.hpp"
 #include "bus.hpp"
+#include "chip8.hpp"
 
 class MockBus : public Bus
 {
     public:
-        Chip8 cpu{};
+        Chip8 cpu;
 
         EventData recentData{};
 
-        MockBus() : cpu()
-        {
-            cpu.linkBus(this);
-        };
+        MockBus() :
+            cpu(*this)
+        {};
 
-        void notify(Component *component, EventData event)
+        void notify(EventData event)
         {
             recentData = event;
 
@@ -117,11 +118,11 @@ TEST_CASE("Chip8 Unit Tests")
         bus.cpu.execute(0x6235);
         bus.cpu.execute(0x8215);
         CHECK_MESSAGE(bus.checkRegValue(2) == 0x10, "INSTR: 8XY5 (12/34)");
-        CHECK_MESSAGE(bus.checkRegValue(15) == 0, "VF 0 when borrow not occured");
+        CHECK_MESSAGE(bus.checkRegValue(15) == 1, "VF 1 when borrow occured");
         bus.cpu.execute(0x6215);
         bus.cpu.execute(0x8215);
         CHECK_MESSAGE(bus.checkRegValue(2) == 0xF0, "INSTR: 8XY5 (12/34)");
-        CHECK_MESSAGE(bus.checkRegValue(15) == 1, "VF 1 when borrow occured");
+        CHECK_MESSAGE(bus.checkRegValue(15) == 0, "VF 0 when borrow not occured");
 
         bus.cpu.execute(0x6324);
         bus.cpu.execute(0x8236);
@@ -135,11 +136,11 @@ TEST_CASE("Chip8 Unit Tests")
         bus.cpu.execute(0x6215);
         bus.cpu.execute(0x8217);
         CHECK_MESSAGE(bus.checkRegValue(2) == 0x10, "INSTR: 8XY7 (14/34)");
-        CHECK_MESSAGE(bus.checkRegValue(15) == 0, "VF 0 when borrow not occured");
+        CHECK_MESSAGE(bus.checkRegValue(15) == 1, "VF 1 when borrow occured");
         bus.cpu.execute(0x6235);
         bus.cpu.execute(0x8217);
         CHECK_MESSAGE(bus.checkRegValue(2) == 0xF0, "INSTR: 8XY7 (14/34)");
-        CHECK_MESSAGE(bus.checkRegValue(15) == 1, "VF 1 when borrow occured");
+        CHECK_MESSAGE(bus.checkRegValue(15) == 0, "VF 0 when borrow not occured");
 
         bus.cpu.execute(0x6324);
         bus.cpu.execute(0x823E);
@@ -187,7 +188,7 @@ TEST_CASE("Chip8 Unit Tests")
             CHECK_MESSAGE(bus.cpu.fetch() == 0x0003, "INSTR: 2202 (17/34)");
 
             bus.cpu.execute(0x00EE);
-            CHECK_MESSAGE(bus.cpu.fetch() == 0x0001, "INSTR: 00EE (18/34)");
+            CHECK_MESSAGE(bus.cpu.fetch() == 0x0002, "INSTR: 00EE (18/34)");
 
             bus.cpu.execute(0x1200 - 2);
             bus.cpu.execute(0x3400);

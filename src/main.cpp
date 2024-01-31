@@ -11,6 +11,7 @@
 #include <random>
 
 #include "header.hpp"
+#include "logger.hpp"
 #include "main.hpp"
 
 // Code from https://stackoverflow.com/questions/288739/generate-random-numbers-uniformly-over-an-entire-range
@@ -20,53 +21,39 @@ std::uniform_int_distribution<uint8_t> distr(0x00, 0xFF);
 
 uint8_t generateRandom() { return distr(generator); }
 
-MainBus::MainBus(Chip8 *cpu, Keyboard *keyboard, Display* display) :
-    cpu(cpu),
-    keyboard(keyboard),
-    display(display)
-{
-    this->cpu->linkBus(this);
-    this->keyboard->linkBus(this);
-    this->display->linkBus(this);
-};
+MainBus::MainBus(SDL_Texture *texture) :
+    cpu(*this),
+    keyboard(*this),
+    display(*this, texture, 0x00000000, 0xFFFFFFFF)
+{};
 
-MainBus::~MainBus()
-{
-    delete cpu;
-    delete keyboard;
-    delete display;
-};
+Chip8&      MainBus::getCPU()       { return cpu;      };
+Keyboard&   MainBus::getKeyboard()  { return keyboard; };
+Display&    MainBus::getDisplay()   { return display;  };
 
-Chip8& MainBus::getCPU()        { return *cpu; };
-Keyboard& MainBus::getKeyboard()  { return *keyboard; };
-Display& MainBus::getDisplay()  { return *display; };
-
-void MainBus::notify(Component *component, EventData event)
+void MainBus::notify(EventData event)
 {
-    if( component == cpu )
+    switch(event.type)
     {
-        switch(event.type)
-        {
-            case EventType::DISPLAY_CLEAR:
-                display->clearScreen();
-                break;
-            case EventType::DISPLAY_DRAW:
-                cpu->setStatusReg(
-                    display->drawPixelData(
-                        event.draw.xpos, 
-                        event.draw.ypos, 
-                        event.draw.data, 
-                        event.draw.size
-                    )
-                );
-                break;
-            case EventType::KEYBOARD_GET:
-                *event.key = keyboard->getKey();
-                break;
-            case EventType::RANDOM: 
-                *event.random.dest = event.random.mask & generateRandom();
-                break;
-        }
+        case EventType::DISPLAY_CLEAR:
+            display.clearScreen();
+            break;
+        case EventType::DISPLAY_DRAW:
+            cpu.setStatusReg(
+                display.drawPixelData(
+                    event.draw.xpos, 
+                    event.draw.ypos, 
+                    event.draw.data, 
+                    event.draw.size
+                )
+            );
+            break;
+        case EventType::KEYBOARD_GET:
+            (*event.key) = keyboard.getKey();
+            break;
+        case EventType::RANDOM: 
+            *event.random.dest = event.random.mask & generateRandom();
+            break;
     }
 }
 
@@ -92,36 +79,54 @@ int main( int argc, char* argv[] )
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
 
+    Logger logger{"main_log.txt"};
+
     if( window == nullptr )
     {
-        std::cout << "Could not create the window: " << SDL_GetError() << std::endl;
+        logger << "Could not create the window: " << SDL_GetError() << std::endl;
         return 1;
     }
 
-    MainBus main_bus{new Chip8{}, new Keyboard{}, new Display{texture, 0x00000000, 0xFFFFFFFF}};
+    MainBus main_bus{texture};
 
-    main_bus.getCPU().loadProgram("\\test\\_data\\keypad_test.ch8");
+    main_bus.getCPU().loadProgram("\\test\\_data\\chipquarium.ch8");
+    // main_bus.getCPU().loadProgram("\\test\\_data\\fez.ch8");
 
     // Game Loop, idea from https://stackoverflow.com/questions/26664139/sdl-keydown-and-key-recognition-not-working-properly
+    
     SDL_Event event;
     while(true)
     {        
-        main_bus.getCPU().execute( main_bus.getCPU().fetch() );
-        main_bus.getDisplay().updateScreen( renderer );
+        const uint64_t prev{SDL_GetTicks64()};
 
-        while( SDL_PollEvent( &event ) )
+        while(SDL_PollEvent( &event ))
         {
-            if( event.type == SDL_QUIT ) 
-            {
-                goto end_program;
-            }
-            else if( event.type == SDL_KEYDOWN )
-            {
-                main_bus.getKeyboard().storeKey( event.key.keysym.scancode );
+            switch(event.type) {
+                case SDL_QUIT:
+                    goto end_program;
+                case SDL_KEYDOWN:
+                    main_bus.getKeyboard().storeKey( event.key.keysym.scancode );
+                    std::cout << event.key.keysym.scancode << std::endl;
+                    break;
+                case SDL_KEYUP:
+                    main_bus.getKeyboard().storeKey( SDL_SCANCODE_UNKNOWN );    
+                    break;
+                default:
+                    break;
             }
         }
+        
+        for(int i{0}; i < 10; ++i) {
+            main_bus.getCPU().execute( main_bus.getCPU().fetch() );
+        }
+        
+        main_bus.getDisplay().updateScreen( renderer );
 
-        SDL_Delay(10);
+        uint32_t delay{ FRAMES_IN_MS - (SDL_GetTicks64() - prev) };
+
+        main_bus.getCPU().tickTimer();
+
+        SDL_Delay( (delay > FRAMES_IN_MS) ? 0 : delay );
     }
 
     end_program:

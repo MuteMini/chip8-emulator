@@ -11,24 +11,27 @@
 #define BUS_H
 
 #include <cstdint>
+#include <string>
 
 #include "event.hpp"
+#include "logger.hpp"
 
 class Component;
 
 class Bus
 {
     public:
-        virtual void notify(Component *component, EventData event) = 0;
+        virtual void notify(EventData event) = 0;
 };
 
 class Component 
 {
     protected:
-        Bus *bus{};
+        Logger logger;
+        Bus& bus;
     
     public:
-        void linkBus(Bus *bus) { this->bus = bus; };
+        Component(std::string logName, Bus& bus) : logger(logName), bus(bus) {};
 };
 
 #endif

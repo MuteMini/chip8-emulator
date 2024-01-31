@@ -1,3 +1,10 @@
+/*
+    Author: Min Kang
+    Creation Date: January 14th, 2024
+
+    Declares shared headers
+*/
+
 #ifndef HEADER_H
 #define HEADER_H
 
@@ -24,5 +31,7 @@
 #define HEX_SPRITE_LENGTH 80
 
 #define KEY_NOTPRESSED 0x10
+
+#define FRAMES_IN_MS 17
 
 #endif
