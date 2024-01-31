@@ -6,6 +6,7 @@
 */
 
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
+#define DEBUG_OFF
 
 #include <doctest/doctest.h>
 
@@ -21,7 +22,7 @@ class MockBus : public Bus
         EventData recentData{};
 
         MockBus() :
-            cpu(Logger{}, *this)
+            cpu(*this)
         {};
 
         void notify(EventData event)

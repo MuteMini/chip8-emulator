@@ -41,7 +41,7 @@ class Chip8 : public Component
         uint8_t sound{};
 
     public:
-        Chip8(Logger logger, Bus& bus);
+        Chip8(Bus& bus);
         ~Chip8();
 
         void setStatusReg(bool status);

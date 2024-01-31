@@ -19,14 +19,12 @@ std::random_device rand_dev{};
 std::mt19937 generator{rand_dev()};
 std::uniform_int_distribution<uint8_t> distr(0x00, 0xFF);
 
-Logger logger{};
-
 uint8_t generateRandom() { return distr(generator); }
 
 MainBus::MainBus(SDL_Texture *texture) :
-    cpu(Logger{}, *this),
-    keyboard(Logger{}, *this),
-    display(Logger{}, *this, texture, 0x00000000, 0xFFFFFFFF)
+    cpu(*this),
+    keyboard(*this),
+    display(*this, texture, 0x00000000, 0xFFFFFFFF)
 {};
 
 Chip8&      MainBus::getCPU()       { return cpu;      };
@@ -80,6 +78,8 @@ int main( int argc, char* argv[] )
 
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
+
+    Logger logger{"main_log.txt"};
 
     if( window == nullptr )
     {

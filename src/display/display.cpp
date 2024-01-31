@@ -14,8 +14,8 @@
 #include "display.hpp"
 #include "logger.hpp"
 
-Display::Display(Logger logger, Bus& bus, SDL_Texture* texture, uint32_t off_pixel, uint32_t on_pixel) : 
-    Component(logger, bus),
+Display::Display(Bus& bus, SDL_Texture* texture, uint32_t off_pixel, uint32_t on_pixel) : 
+    Component("display_log.txt", bus),
     texture(texture),
     off_pixel(off_pixel),
     on_pixel(on_pixel)

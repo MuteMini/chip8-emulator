@@ -32,8 +32,8 @@ const SDL_Scancode KEYBOARD_MAP[16] {
     SDL_SCANCODE_V,
 };
 
-Keyboard::Keyboard(Logger logger, Bus& bus) :
-    Component(logger, bus),
+Keyboard::Keyboard(Bus& bus) :
+    Component("keyboard_log.txt", bus),
     key(KEY_NOTPRESSED)
 {};
 

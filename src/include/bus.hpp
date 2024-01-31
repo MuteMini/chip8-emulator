@@ -11,6 +11,7 @@
 #define BUS_H
 
 #include <cstdint>
+#include <string>
 
 #include "event.hpp"
 #include "logger.hpp"
@@ -30,7 +31,7 @@ class Component
         Bus& bus;
     
     public:
-        Component(Logger logger, Bus& bus) : logger(logger), bus(bus) {};
+        Component(std::string logName, Bus& bus) : logger(logName), bus(bus) {};
 };
 
 #endif

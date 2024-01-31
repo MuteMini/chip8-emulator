@@ -25,7 +25,7 @@ class Display : public Component
         SDL_Texture* texture{};
 
     public:
-        Display(Logger logger, Bus& bus, SDL_Texture* texture, uint32_t off_pixel, uint32_t on_pixel);
+        Display(Bus& bus, SDL_Texture* texture, uint32_t off_pixel, uint32_t on_pixel);
         ~Display();
 
         bool drawPixelData(uint16_t x_pos, uint16_t y_pos, uint8_t data[], std::size_t size);

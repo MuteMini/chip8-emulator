@@ -15,7 +15,7 @@
 #include "logger.hpp"
 #include "chip8.hpp"
 
-Chip8::Chip8(Logger logger, Bus& bus) : Component(logger, bus)
+Chip8::Chip8(Bus& bus) : Component("chip8_log.txt", bus)
 {
     this->reset();
 };
@@ -111,12 +111,12 @@ void Chip8::execute(uint16_t opcode)
     uint16_t reg_X{ static_cast<uint16_t>((opcode & 0x0F00) >> 8) };
     uint16_t reg_Y{ static_cast<uint16_t>((opcode & 0x00F0) >> 4) };
 
-    std::cout << std::hex << +pc << ":" << +opcode << " [";
+    logger << std::hex << +pc << ":" << +opcode << " [";
     for(int i{0}; i < 15; ++i)
     {
-        std::cout << std::hex << +reg[i] << " ";
+        logger << std::hex << +reg[i] << " ";
     }
-    std::cout << "]" << std::endl; 
+    logger << "]" << std::endl; 
 
     pc += 2;
     switch( (opcode & 0xF000) >> 12 )

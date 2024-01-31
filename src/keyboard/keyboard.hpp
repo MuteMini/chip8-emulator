@@ -22,7 +22,7 @@ class Keyboard : public Component {
         uint8_t key;
 
     public:
-        Keyboard(Logger logger, Bus& bus);
+        Keyboard(Bus& bus);
 
         uint8_t getKey();
 

@@ -17,14 +17,28 @@
 #include <fstream>
 #include <ios>
 #include <iostream>
+#include <string>
 
 class Logger
 {
     private:
-        std::ostream& stream;
+        std::ofstream stream;
 
     public:
-        Logger(std::ostream& stream = std::cout) : stream(stream) {};
+        Logger(std::string fileName) : stream{}
+        {
+            std::filesystem::path logFile{std::filesystem::current_path()};
+            logFile += std::filesystem::u8path("\\_logs\\"+fileName);
+
+            std::cout << logFile.parent_path();
+
+            stream.open(logFile, std::ios::trunc);
+        };
+
+        ~Logger()
+        {
+            stream.close();
+        };
 
         template<typename T> 
         Logger& operator<< (T object) 
@@ -45,7 +59,7 @@ class Logger
 class Logger
 {
     public:
-        Logger() {};
+        Logger(std::string fileName) {};
 
         template<typename T> 
         Logger& operator<< (T object)                           { return *this; };
