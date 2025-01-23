@@ -3,6 +3,9 @@
     Creation Date: January 7th, 2024
 
     Entry point of the SDL executable. Sets up the event loop for the Chip8 interpreter.
+
+    SDL event loop source: https://stackoverflow.com/questions/26664139/sdl-keydown-and-key-recognition-not-working-properly
+    Random number generation source: https://stackoverflow.com/questions/288739/generate-random-numbers-uniformly-over-an-entire-range
 */
 
 #include <SDL2/SDL.h>
@@ -14,7 +17,6 @@
 #include "logger.hpp"
 #include "main.hpp"
 
-// Code from https://stackoverflow.com/questions/288739/generate-random-numbers-uniformly-over-an-entire-range
 std::random_device rand_dev{};
 std::mt19937 generator{rand_dev()};
 std::uniform_int_distribution<uint8_t> distr(0x00, 0xFF);
@@ -90,10 +92,7 @@ int main( int argc, char* argv[] )
     MainBus main_bus{texture};
 
     main_bus.getCPU().loadProgram("\\test\\_data\\chipquarium.ch8");
-    // main_bus.getCPU().loadProgram("\\test\\_data\\fez.ch8");
 
-    // Game Loop, idea from https://stackoverflow.com/questions/26664139/sdl-keydown-and-key-recognition-not-working-properly
-    
     SDL_Event event;
     while(true)
     {        
@@ -106,7 +105,6 @@ int main( int argc, char* argv[] )
                     goto end_program;
                 case SDL_KEYDOWN:
                     main_bus.getKeyboard().storeKey( event.key.keysym.scancode );
-                    std::cout << event.key.keysym.scancode << std::endl;
                     break;
                 case SDL_KEYUP:
                     main_bus.getKeyboard().storeKey( SDL_SCANCODE_UNKNOWN );    
@@ -121,11 +119,9 @@ int main( int argc, char* argv[] )
         }
         
         main_bus.getDisplay().updateScreen( renderer );
-
-        uint32_t delay{ FRAMES_IN_MS - (SDL_GetTicks64() - prev) };
-
         main_bus.getCPU().tickTimer();
 
+        uint32_t delay{ FRAMES_IN_MS - (SDL_GetTicks64() - prev) };
         SDL_Delay( (delay > FRAMES_IN_MS) ? 0 : delay );
     }
 
